@@ -35,6 +35,8 @@ export const styles = StyleSheet.create({
     left: -40,
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 10,
+    
   },
   touchiIOS: {
     borderRadius: 100,
@@ -82,9 +84,9 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "space-evenly",
-    height: 60,
+    height: 40,
     marginHorizontal: 9,
-    marginVertical: 6,
+    marginVertical: 9,
     elevation: 4,
   },
   container: {

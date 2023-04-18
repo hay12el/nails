@@ -19,6 +19,12 @@ export const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderColor: "#0000ff",
   },
+  container1: {
+    backgroundColor: "black",
+    height: "100%",
+    width: '100%',
+    paddingBottom: 110
+  },
   loading: {
     position: "absolute",
     left: "45%",
@@ -35,4 +41,19 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#e5e5e8",
   },
+  item: {
+    backgroundColor: 'white',
+    flex: 1,
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+    marginTop: 17
+  },
+  emptyDate: {
+    display: 'flex',
+    justifyContent:'center',
+    alignItems:'center',
+    width: '100%',
+    height: '100%',
+  }
 });

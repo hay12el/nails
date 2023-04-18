@@ -43,13 +43,15 @@ export const styles = StyleSheet.create({
   },
   btn1: {
     backgroundColor: colors.second,
-    width: 90,
+    width: 150,
     height: 40,
     padding: 0,
     borderRadius: 5,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: 'row',
+    gap: 8
   },
   btn: {
     backgroundColor: colors.first,
@@ -76,4 +78,17 @@ export const styles = StyleSheet.create({
     height: 230,
     shadowColor: "#000",
   },
+  TOOverlay: {
+    position: "absolute",
+    top: 15,
+    left: 15,
+    height: 25,
+    width: 25,
+    zIndex: 10,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.first,
+    borderRadius: 2,
+  }
 });

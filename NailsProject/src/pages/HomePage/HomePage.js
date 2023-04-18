@@ -1,5 +1,5 @@
-import { View, ScrollView } from "react-native";
-import React from "react";
+import { View, ScrollView, Animated } from "react-native";
+import React, {useRef} from "react";
 import { styles } from "../HomePage/SHomePage";
 import { StatusBar } from "expo-status-bar";
 import { useSelector } from "react-redux";
@@ -14,13 +14,22 @@ import AdminEditor from "../../components/AdminEditor/AdminEditor";
 
 const HomePage = () => {
   const user = useSelector(state => state.user)
+  const scrollA = useRef(new Animated.Value(0)).current
+
   return (
     <View style={styles.BigContainer}>
-      <Header />
+      <Header scrollA={scrollA}/>
       <View style={styles.main}>
         <StatusBar style="dark" />
 
-        <ScrollView>
+        <Animated.ScrollView
+        // onScroll={e => console.log(e.nativeEvent.contentOffset.y)}
+        onScroll={Animated.event(
+          [{nativeEvent: {contentOffset: {y: scrollA}}}],
+          {useNativeDriver: true},
+        )}
+        scrollEventThrottle={16}
+      >
           <View style={{ paddingTop: 50 }}>
             <UserScroll />
             <AboutMe />
@@ -31,7 +40,7 @@ const HomePage = () => {
           {user.isAdmin ? 
           <AdminEditor />
           : null}
-        </ScrollView>
+        </Animated.ScrollView>
       </View>
       <NavBar />
     </View>

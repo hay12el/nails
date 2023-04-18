@@ -88,7 +88,7 @@ export default function MyQueues({ navigation }) {
         </LinearGradient>
       )}
 
-      <View style={{ height: "100%", backgroundColor: "white" }}>
+      <View style={{ height: "100%", backgroundColor: "white", paddingBottom: 50 }}>
         {Object.keys(queues).length === 0 ? (
           <View style={{ marginTop: "50%" }}>
             <Text style={{ textAlign: "center", fontSize: 40 }}>

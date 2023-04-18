@@ -5,5 +5,7 @@ export default Colors = {
     second: '#B7D3DF', //dark pink
     third: '#898AA6', //Dark 
     forth: '#C9BBCF', //light
-    text: '#364F6B'
+    text: '#364F6B',
+    acceptGreeb: '#4caf50',
+    rejectRed: '#f44337'
 }

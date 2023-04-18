@@ -4,24 +4,49 @@ import { View, Text, FlatList, Image, Pressable } from "react-native";
 import Title from "../Title/Title";
 import { styles } from "./SWorkScroll";
 import LittleTitle from "../LittleTitle/LittleTitle";
-import photos from "../../utils/photos";
-
+// import photos from "../../utils/photos";
+import { useSelector } from "react-redux";
+import colors from "../../styles/colors";
 
 const WorkScroll = () => {
+  const photos = useSelector(state => state.properties.photos)
   return (
-    <View style={{ width: "100%", alignItems: "center", marginVertical: 20, position: 'relative' }}>
+    // <View style={{ width: "100%", alignItems: "center", marginVertical: 20, position: 'relative' }}>
+    <View
+      style={{
+        width: "100%",
+        alignItems: "center",
+        position: "relative",
+        backgroundColor: 'white',
+        paddingVertical: 30,
+      }}
+    >
       {/* <Title text={"העבודות שלי"} /> */}
-      <View style={{width: '100%', paddingBottom: 15}}>
+      {/* <View style={{width: '100%', paddingBottom: 15}}>
         <LittleTitle text={"העבודות שלי"} />
+      </View> */}
+      <View
+        style={{
+          width: "100%",
+          paddingBottom: 15,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ color: colors.text, fontSize: 16, fontWeight: "600" }}>
+          העבודות שלי
+        </Text>
+        {/* <LittleTitle text={"העבודות שלי"} /> */}
       </View>
       <View style={styles.FLView}>
         <FlatList
-          data={photos.photos}
+          data={photos}
           renderItem={({ item }) => <ListItem item={item} />}
           keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
           horizontal
-          />
+        />
       </View>
     </View>
   );
@@ -72,7 +97,7 @@ const ListItem = ({ item }) => {
             style={{
               textAlign: "center",
               fontWeight: "bold",
-              color: "#364F6B",
+              color: colors.text,
             }}
           >
             {item.text}

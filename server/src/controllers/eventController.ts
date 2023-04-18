@@ -25,7 +25,6 @@ export const getDayQueues = async (req: Request, res: Response) => {
 };
 
 export const addNewQueue = async (req: Request, res: Response) => {
-  //@ts-ignore
   const { myAdmin, time, hour } = req.body;
   const dateObj = new Date(time);
   const month = dateObj.getUTCMonth(); //months from 1-12
@@ -33,9 +32,6 @@ export const addNewQueue = async (req: Request, res: Response) => {
   const year = dateObj.getUTCFullYear();
   const hourN = hour;
   const theTime = new Date(year, month, day, hourN + 3);
-
-  let tomorowDate = new Date(year, month, day + 5, hourN + 3);
-  let yesterdayDate = new Date(year, month, day - 5, hourN + 3);
 
   try {
     //make new Event
@@ -103,13 +99,17 @@ export const deleteMyQueue = async (req: Request, res: Response) => {
 export const AdminGetDayQueues = async (req: Request, res: Response) => {
   try {
     //@ts-ignore
+    const timeAsString = req.query.date.split('T')[0];
+    
+    //@ts-ignore
     const Day = returnDate(req.query.date);
     let nextDay = new Date(Day);
     nextDay.setDate(Day.getDate() + 1);
     
     //@ts-ignore
-    const queues = await Event.find({ admin: req.userId, time: {$gte: Day, $lt: nextDay}});
+    const queues = await Event.find({ admin: req.userId, time: {$gte: Day, $lt: nextDay}}).sort('time');
 
+    const objectToReturn = {}
     let LST = [];
     for (let queue of queues) {
       let user = await User.findOne({ _id: queue.connectTo }).select(
@@ -125,18 +125,37 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
         },
         postId: queue._id,
         time: queue.time,
+        type: queue.type,
         //@ts-ignore
-        hour: queue.time.getHours() -3
+        hour: queue.time.getHours() -3,
+        iscatched: true
       };
       LST.push(newObj)
     }
-    
-    res.send({events: LST}).status(200);
+    LST.sort()
+    //@ts-ignore
+    objectToReturn[timeAsString] = LST;
+    res.send({events: objectToReturn}).status(200);
   } catch (err: any) {
     console.log(err.message);
     res.sendStatus(404);
   }
 };
+
+export const AdminDeleteQueue = async (req: Request, res: Response) => {
+  try{
+    const {userId, date, queueId} = req.body;
+
+    await User.findOneAndUpdate({_id: userId}, { $pull: { queues: queueId }})
+
+    await Event.findOneAndDelete({_id: queueId})
+    
+    req.query.date = date
+    AdminGetDayQueues(req, res);
+  }catch(err){
+    res.sendStatus(404);
+  }
+}
 
 const returnDate = (date: string) => {
   const dateObj = new Date(date);

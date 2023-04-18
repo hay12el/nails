@@ -20,11 +20,12 @@ import { LOGOUT } from "../../redux/User";
 //components
 import Message from "../Message/Message";
 import NewQueue from "../NewQueue/NewQueue";
-import Linkim from '../../utils/links'
+import colors from "../../styles/colors";
 
 const NavBar = (props) => {
   const [massage, setMassage] = useState(false);
   const user = useSelector((state) => state.user);
+  const links = useSelector(state => state.properties.Linkim)
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const rreload = props.rreload;
@@ -56,14 +57,14 @@ const NavBar = (props) => {
         >
           <View>
             <TouchableOpacity onPress={() => navigation.navigate("HomePage")}>
-              <Ionicons name="home-outline" size={30} color="#364F6B" />
+              <Ionicons name="home-outline" size={30} color={colors.text} />
             </TouchableOpacity>
           </View>
           {user.isAdmin ? (
             <TouchableOpacity
               onPress={() => navigation.navigate("Admin_pannel")}
             >
-              <FontAwesome name="calendar" size={28} color="#364F6B" />
+              <FontAwesome name="calendar" size={28} color={colors.text} />
             </TouchableOpacity>
           ) : (
             <>
@@ -71,7 +72,7 @@ const NavBar = (props) => {
                 onPress={() => navigation.navigate("MyQueues")}
                 style={{ marginRight: 10 }}
               >
-                <FontAwesome name="calendar" size={28} color="#364F6B" />
+                <FontAwesome name="calendar" size={28} color={colors.text} />
               </TouchableOpacity>
 
               <View>
@@ -81,17 +82,17 @@ const NavBar = (props) => {
               <TouchableOpacity
                 onPress={() =>
                   Linking.openURL(
-                    Linkim.wase
+                    links.wase
                   )
                 }
               >
-                <FontAwesome5 name="waze" size={29} color="#364F6B" />
+                <FontAwesome5 name="waze" size={29} color={colors.text} />
               </TouchableOpacity>
             </>
           )}
 
           <TouchableOpacity onPress={() => setMassage(true)}>
-            <Entypo name="log-out" size={29} color="#364F6B" />
+            <Entypo name="log-out" size={29} color={colors.text} />
           </TouchableOpacity>
         </LinearGradient>
       </View>

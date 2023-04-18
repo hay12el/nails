@@ -12,7 +12,6 @@ import colors from "../../styles/colors";
 const Message = (props) => {
   return (
     <Modal
-
       animationType={"fade"}
       transparent={true}
       visible={props.open}

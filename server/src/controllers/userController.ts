@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { getAdminProperties } from './propertiesController'
 import User from "../models/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -11,7 +12,12 @@ const checkAuth = async (req: Request, res: Response) => {
     } else {
       //@ts-ignore
       const user = await User.findOne({ _id: req.userId }, { password: 0 });
-      res.json({ user: user }).status(200);
+      //@ts-ignore
+      req.query.user = user;
+      //@ts-ignore
+      req.query.adminId = user.myAdmin;
+      getAdminProperties(req, res);
+      // res.json({ user: user }).status(200);
     }
   }catch(err){
     res.sendStatus(401);

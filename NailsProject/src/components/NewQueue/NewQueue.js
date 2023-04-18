@@ -20,6 +20,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./SNewQueue";
 import colors from "../../styles/colors";
+import CalendarStrip from "react-native-calendar-strip";
 
 const days = {
   0: "ראשון",
@@ -29,6 +30,72 @@ const days = {
   4: "חמישי",
   5: "שישי",
   6: "שבת",
+};
+
+const locale = {
+  name: 'he',
+  config: {
+    months: 'ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובר_נובמבר_דצמבר'.split(
+      '_'
+    ),
+    monthsShort: 'ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובק_נובמבר_דצמבר'.split(
+      '_'
+    ),
+    weekdays: 'ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת'.split('_'),
+    weekdaysShort:'ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת'.split('_'),
+    weekdaysMin: 'ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת'.split('_'),
+    week: {
+      dow: 0, // Monday is the first day of the week.
+      doy: 4 // The week that contains Jan 4th is the first week of the year.
+    }
+    // longDateFormat: {
+    //   LT: 'HH:mm',
+    //   LTS: 'HH:mm:ss',
+    //   L: 'DD/MM/YYYY',
+    //   LL: 'D MMMM YYYY',
+    //   LLL: 'D MMMM YYYY LT',
+    //   LLLL: 'dddd D MMMM YYYY LT'
+    // },
+    // calendar: {
+    //   sameDay: "[Aujourd'hui à] LT",
+    //   nextDay: '[Demain à] LT',
+    //   nextWeek: 'dddd [à] LT',
+    //   lastDay: '[Hier à] LT',
+    //   lastWeek: 'dddd [dernier à] LT',
+    //   sameElse: 'L'
+    // },
+    // relativeTime: {
+    //   future: 'dans %s',
+    //   past: 'il y a %s',
+    //   s: 'quelques secondes',
+    //   m: 'une minute',
+    //   mm: '%d minutes',
+    //   h: 'une heure',
+    //   hh: '%d heures',
+    //   d: 'un jour',
+    //   dd: '%d jours',
+    //   M: 'un mois',
+    //   MM: '%d mois',
+    //   y: 'une année',
+    //   yy: '%d années'
+    // },
+    // ordinalParse: /\d{1,2}(er|ème)/,
+    // ordinal: function(number) {
+    //   return number + (number === 1 ? 'er' : 'ème');
+    // },
+    // meridiemParse: /PD|MD/,
+    // isPM: function(input) {
+    //   return input.charAt(0) === 'M';
+    // },
+    // in case the meridiem units are not separated around 12, then implement
+    // this function (look at locale/id.js for an example)
+    // meridiemHour : function (hour, meridiem) {
+    //     return /* 0-23 hour, given meridiem token and hour 1-12 */
+    // },
+    // meridiem: function(hours, minutes, isLower) {
+    //   return hours < 12 ? 'PD' : 'MD';
+    // },
+  }
 };
 
 const NewQueue = (props) => {
@@ -78,14 +145,13 @@ const NewQueue = (props) => {
 
   const addQueue = async () => {
     setThinking(true);
-    
-    await API
-      .post(
-        "/event/addNewQueue",
-        ////add Admin_Id
-        // { user: user, time: selectedDate, hour: choousenHour, admin: ADMIN_ID }
-        { token: user.token, time: selectedDate, hour: choousenHour, myAdmin: user.myAdmin }
-      )
+
+    API.post("/event/addNewQueue", {
+      token: user.token,
+      time: selectedDate,
+      hour: choousenHour,
+      myAdmin: user.myAdmin,
+    })
       .then(async (response) => {
         if (!(typeof response.data == "string")) {
           setThinking(false);
@@ -163,32 +229,31 @@ const NewQueue = (props) => {
         alignContent: "center",
       }}
     >
-
-      {Platform.OS === "android" ? (
+      {/*Platform.OS === "android" ? (*/}
+      <TouchableOpacity
+        activeOpacity={0.1}
+        onPress={() => visi()}
+        style={styles.touchi}
+      >
+        <LinearGradient
+          colors={[colors.forth, colors.forth, colors.third]}
+          locations={[0.0, 0.5, 1.0]}
+          style={styles.linearGradient}
+        >
+          <FontAwesome name="plus" size={32} color="white" />
+        </LinearGradient>
+      </TouchableOpacity>
+      {/* ) : (
         <TouchableOpacity
           activeOpacity={0.1}
           onPress={() => visi()}
           style={styles.touchi}
         >
-          <LinearGradient
-            colors={[colors.forth, colors.forth, colors.third]}
-            locations={[0.0, 0.5, 1.0]}
-            style={styles.linearGradient}
-          >
-            <FontAwesome name="plus" size={32} color="white" />
-          </LinearGradient>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          activeOpacity={0.1}
-          onPress={() => visi()}
-          style={styles.touchiIOS}
-        >
           <View style={styles.linearGradient}>
             <FontAwesome name="plus" size={32} color="white" />
           </View>
         </TouchableOpacity>
-      )}
+     )*/}
 
       <Modal
         visible={toApear}
@@ -299,7 +364,7 @@ const NewQueue = (props) => {
             </Modal>
 
             <ScrollView>
-              <CalendarPicker
+              {/* <CalendarPicker
                 startFromMonday={false}
                 weekdays={daysF}
                 minDate={new Date()}
@@ -309,6 +374,17 @@ const NewQueue = (props) => {
                 onDateChange={onDateChange}
                 previousTitle="הקודם"
                 nextTitle="הבא"
+              /> */}
+              <CalendarStrip
+                style={{ height: 150, paddingTop: 20, paddingBottom: 10 }}
+                selectedDate={new Date()}
+                onDateSelected={onDateChange}
+                locale={locale}
+                numDaysInWeek={7}
+                daySelectionAnimation={{
+                  type: 'background',
+
+                }}
               />
 
               <LinearGradient
@@ -326,12 +402,23 @@ const NewQueue = (props) => {
                   marginTop: 0,
                 }}
               >
-                
-                <Text style={{ textAlign: "center", fontSize: 30, color: colors.text }}>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: 30,
+                    color: colors.text,
+                  }}
+                >
                   יום {days[selectedDate.getDay()]}
                 </Text>
 
-                <Text style={{ textAlign: "center", fontSize: 17, color: colors.text }}>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: 17,
+                    color: colors.text,
+                  }}
+                >
                   {selectedDate.getDate()}/{selectedDate.getMonth() + 1}/
                   {selectedDate.getFullYear()}
                 </Text>
@@ -339,19 +426,18 @@ const NewQueue = (props) => {
 
               <View style={styles.FLcontainer}>
                 {selectedDate.getDay() != 5 && selectedDate.getDay() != 6 ? (
-                  <FlatList
-                    horizontal
-                    
-                    data={hours}
-                    renderItem={({ item }) => {
-                      //check if hour is catched
-                      let flag = false;
-                      for (let x in catchH) {
-                        if (catchH[x] == item.hour) {
-                          flag = true;
-                        }
-                      }
-                      if (flag) {
+                  <View
+                    style={{
+                      display: "flex",
+                      width: "100%",
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    {hours.map((item) => {
+                      if (catchH.includes(item.hour)) {
                         item.color = "white";
                         item.iscatched = true;
                         return <></>;
@@ -368,6 +454,7 @@ const NewQueue = (props) => {
                                 setMassage(!massage);
                               }
                             }}
+                            key={item.hour}
                           >
                             <View
                               style={[
@@ -376,7 +463,11 @@ const NewQueue = (props) => {
                               ]}
                             >
                               <Text
-                                style={{ textAlign: "right", fontSize: 19, color: colors.text }}
+                                style={{
+                                  textAlign: "right",
+                                  fontSize: 19,
+                                  color: colors.text,
+                                }}
                               >
                                 {" "}
                                 {item.hour}:00
@@ -385,9 +476,61 @@ const NewQueue = (props) => {
                           </TouchableOpacity>
                         );
                       }
-                    }}
-                  />
+                    })}
+                  </View>
                 ) : (
+                  // {selectedDate.getDay() != 5 && selectedDate.getDay() != 6 ? (
+                  //   <FlatList
+                  //     horizontal
+                  //     data={hours}
+                  //     renderItem={({ item }) => {
+                  //       //check if hour is catched
+                  //       let flag = false;
+                  //       for (let x in catchH) {
+                  //         if (catchH[x] == item.hour) {
+                  //           flag = true;
+                  //         }
+                  //       }
+                  //       if (flag) {
+                  //         item.color = "white";
+                  //         item.iscatched = true;
+                  //         return <></>;
+                  //       } else {
+                  //         item.color = "white";
+                  //         item.iscatched = false;
+                  //         return (
+                  //           <TouchableOpacity
+                  //             onPress={() => {
+                  //               if (item.iscatched) {
+                  //                 console.log("catched " + item.hour);
+                  //               } else {
+                  //                 setChoosenHour(item.hour);
+                  //                 setMassage(!massage);
+                  //               }
+                  //             }}
+                  //           >
+                  //             <View
+                  //               style={[
+                  //                 styles.sectionBox,
+                  //                 { backgroundColor: "white" },
+                  //               ]}
+                  //             >
+                  //               <Text
+                  //                 style={{
+                  //                   textAlign: "right",
+                  //                   fontSize: 19,
+                  //                   color: colors.text,
+                  //                 }}
+                  //               >
+                  //                 {" "}
+                  //                 {item.hour}:00
+                  //               </Text>
+                  //             </View>
+                  //           </TouchableOpacity>
+                  //         );
+                  //       }
+                  //     }}
+                  //   />
                   <View
                     style={{
                       height: 90,

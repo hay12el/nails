@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import colors from "../../styles/colors";
 
 export const styles = StyleSheet.create({
   FLView: {
@@ -7,7 +8,8 @@ export const styles = StyleSheet.create({
     marginTop: 0,
     // elevation: 6,
     backgroundColor: "white",
-    paddingRight: 10
+    paddingRight: 10,
+    // backgroundColor: colors.first,
   },
   item: {
     shadowColor: "#000",

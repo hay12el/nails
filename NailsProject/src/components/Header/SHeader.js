@@ -10,6 +10,15 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
   },
+  HeaderContainer:  {
+    position: "absolute",
+    top: 0,
+    zIndex: 10,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
   // linearGradientIOS: {
   //   height: 60,
   //   display: "flex",

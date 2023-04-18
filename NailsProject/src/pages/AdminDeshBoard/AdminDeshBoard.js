@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { StatusBar } from "expo-status-bar";
-import { View, FlatList, Image, Text, ActivityIndicator } from "react-native";
+import {
+  View,
+  FlatList,
+  Image,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { styles } from "./SAdminDeshBoard";
 import CalendarPicker from "react-native-calendar-picker";
 import { Overlay } from "react-native-elements";
 import Constants from "expo-constants";
 const StatusBarHeight = Constants.statusBarHeight;
+import { Agenda, LocaleConfig } from "react-native-calendars";
+
 //components
-import Queue from "../../components/Queue/Queue";
+import Queue from "../../components/QueueA/Queue";
 import NavBar from "../../components/NavBar/NavBar";
 import API from "../../api/api";
 import colors from "../../styles/colors";
@@ -37,10 +47,94 @@ export default function Admin_pannel({ navigation }) {
     { hour: 20, key: "10", iscatched: false, user: {} },
   ]);
 
-  const onDateChange = async (date) => {
-    const a = new Date(date);
+  LocaleConfig.locales["he"] = {
+    monthNames: [
+      "ינואר",
+      "פברואר",
+      "מרץ",
+      "אפריל",
+      "מאי",
+      "יוני",
+      "יולי",
+      "אוגוסט",
+      "ספטמבר",
+      "אוקטובר",
+      "נובמבר",
+      "דצמבר",
+    ],
+    monthNames: [
+      "ינואר",
+      "פברואר",
+      "מרץ",
+      "אפריל",
+      "מאי",
+      "יוני",
+      "יולי",
+      "אוגוסט",
+      "ספטמבר",
+      "אוקטובר",
+      "נובמבר",
+      "דצמבר",
+    ],
+    monthNamesShort: [
+      "ינואר",
+      "פברואר",
+      "מרץ",
+      "אפריל",
+      "מאי",
+      "יוני",
+      "יולי",
+      "אוגוסט",
+      "ספטמבר",
+      "אוקטובר",
+      "נובמבר",
+      "דצמבר",
+    ],
+    dayNames: ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"],
+    dayNamesShort: ["א", "ב", "ג", "ד", "ה", "ו", "שבת"],
+    today: "Aujourd'hui",
+  };
+
+  LocaleConfig.defaultLocale = "he";
+
+  const [items, setItems] = useState({
+  });
+
+  const onDateChange = (date) => {
+    const a = new Date(date.dateString);
     setSelectedDate(a);
   };
+
+  const renderItem = ( item ) => {
+    
+    return (
+      <Queue
+        item={item}
+        selectedDate={selectedDate}
+        setThinking={setThinking}
+        setCatchH={setCatchH}
+        setIndicator={setIndicator}
+        indicator={indicator}
+      />
+    );
+  };
+
+  const renderEmptyDate = () => {
+    return (
+      <View style={styles.emptyDate}>
+        <Text style={{fontSize: 16,fontWeight: '700'}}>אין תורים ביום זה</Text>
+      </View>
+    );
+  };
+
+  const rowHasChanged = (r1, r2) => {
+    return r1.name !== r2.name;
+  };
+
+  function timeToString(time) {
+    const date = new Date(time);
+    return date.toISOString().split("T")[0];
+  }
 
   useEffect(() => {
     setThinking(true);
@@ -50,7 +144,8 @@ export default function Admin_pannel({ navigation }) {
       })
         .then((response) => {
           setThinking(false);
-          setCatchH(response.data.events);
+          // console.log(response.data.events);
+          setItems(response.data.events);
           setThinking(false);
         })
         .catch((err) => {
@@ -73,6 +168,7 @@ export default function Admin_pannel({ navigation }) {
         display: "flex",
         justifyContent: "center",
         alignContent: "center",
+        width: "100%",
         height: "100%",
         marginTop: StatusBarHeight,
       }}
@@ -81,15 +177,29 @@ export default function Admin_pannel({ navigation }) {
       <Overlay isVisible={Success} onBackdropPress={toggleOverlay}>
         <View style={styles.overlay}>
           <Image
-            source={require("../../../assets/success.gif")}
             style={{ height: 150, width: 150 }}
+            source={require("../../../assets/success.gif")}
           />
           <Text style={{ fontSize: 15 }}>התור נקבע בהצלחה!</Text>
         </View>
       </Overlay>
 
-      <View style={styles.container}>
-        <CalendarPicker
+      <View style={styles.container1}>
+        <Agenda
+          items={items}
+          // loadItemsForMonth={loadItems}
+          selected={new Date().toISOString().split("T")[0]}
+          renderItem={renderItem}
+          renderEmptyDate={renderEmptyDate}
+          rowHasChanged={rowHasChanged}
+          showClosingKnob={true}
+          onDayPress={(day) => {
+            onDateChange(day);
+          }}
+          showOnlySelectedDayItems={true}
+        />
+
+        {/* <CalendarPicker
           startFromMonday={false}
           weekdays={["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"]}
           todayBackgroundColor={colors.second}
@@ -112,6 +222,7 @@ export default function Admin_pannel({ navigation }) {
           previousTitle="הקודם"
           nextTitle="הבא"
         />
+        
         <View style={styles.FLcontainer}>
           {selectedDate.getDay() != 5 && selectedDate.getDay() != 6 ? (
             <FlatList
@@ -161,7 +272,7 @@ export default function Admin_pannel({ navigation }) {
               <Text style={{ fontSize: 22 }}>אין תורים ביום הזה</Text>
             </View>
           )}
-        </View>
+        </View> */}
       </View>
 
       <View style={styles.menuNavigator}>

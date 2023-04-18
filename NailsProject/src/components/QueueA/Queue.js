@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import Message from "../Message/Message";
 import { FontAwesome, Feather } from "@expo/vector-icons";
-import {
-  View,
-  Linking,
-  Pressable,
-  TouchableOpacity,
-  Text,
-} from "react-native";
+import { View, Linking, Pressable, TouchableOpacity, Text } from "react-native";
 import { useSelector } from "react-redux";
 import { styles } from "./SQueue";
 import API from "../../api/api";
@@ -42,8 +36,16 @@ const Queue = ({
     }
   };
 
+  const AMPM = (hour, first)=> {
+    let minute = '00';
+    if(!first){
+     minute = item.type == 'A' ? '00' : '30';
+    }
+    return parseInt(hour) < 13 ? hour+':'+ minute +'AM' : hour+':'+ minute +'PM';
+  }
+
   const deleteQueue = async () => {
-    setThinking(true);
+    // setThinking(true);
     setOpen(false);
     try {
       API.post("/event/AdminDeleteQueue", {
@@ -54,7 +56,7 @@ const Queue = ({
       })
         .then((response) => {
           setIndicator(!indicator);
-          setThinking(false);
+          // setThinking(false);
           setCatchH(response.data.events);
         })
         .catch((err) => {
@@ -64,7 +66,7 @@ const Queue = ({
     } catch (err) {
       setOpen(false);
       setIndicator(!indicator);
-      setThinking(false);
+      // setThinking(false);
     }
   };
 
@@ -91,62 +93,56 @@ const Queue = ({
   };
   // const item = props.item;
   return (
-    <View>
+    <View style={{ marginTop: 30 }}>
       {item.iscatched ? (
         <View
-          style={{
-            height: 180,
+          style={[{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
             backgroundColor: "white",
-            borderWidth: 1,
             marginHorizontal: 3,
-            marginVertical: 0,
-          }}
+            padding: 20,
+            gap: 10
+          }, item.type == 'A' ? {height: 130,} : {height: 200,}]}
         >
           <View
             style={{
-              marginTop: 3,
               display: "flex",
               flexDirection: "row",
-              alignContent: "flex-start",
+              alignContent: "center",
               justifyContent: "center",
-              direction: "rtl",
+              direction: "ltr",
+              
             }}
           >
             <Text
-              style={{ textAlign: "right", fontSize: 18, color: colors.text }}
+              style={{
+                textAlign: "center",
+                fontSize: 14,
+                color: 'black',
+                direction: "rtl",
+              }}
             >
-              יום {days[selectedDate.getDay()]} {selectedDate.getDate()}/
-              {selectedDate.getMonth() + 1}
+              {AMPM(item.hour + 1, false)}
             </Text>
-            <Text> </Text>
             <Text
-              style={{ textAlign: "right", fontSize: 18, color: colors.text }}
+              style={{
+                textAlign: "center",
+                fontSize: 14,
+                color: 'black',
+              }}
             >
-              בשעה {item.hour}:00
+              {`${AMPM(item.hour,true)} - `}
             </Text>
           </View>
 
           {typeof item.user.isAdmin === "undefined" || !item.user.isAdmin ? (
-            <View
-              style={{
-                width: "95%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                margin: 12,
-                backgroundColor: "#f5f5f5",
-                borderRadius: 10,
-                paddingBottom: 10,
-              }}
-            >
-              <View style={{ marginBottom: 18 }}>
-                <Text style={{ fontSize: 16, color: colors.text }}>
-                  התור של {item.user.username}
+            <>
+              <View>
+                <Text style={{ fontSize: 18, color: colors.text }}>
+                  {item.user.username}
                 </Text>
               </View>
 
@@ -154,50 +150,67 @@ const Queue = ({
                 style={{
                   display: "flex",
                   flexDirection: "row",
-                  alignContent: "center",
-                  justifyContent: "center",
+                  alignContent: "space-between",
+                  justifyContent: "flex-start",
                   direction: "rtl",
+                  width:'100%',
                 }}
               >
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignContent: "center",
+                    justifyContent: 'flex-start',
+                    direction: "rtl",
+                    width: 100
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      Linking.openURL(`tel:${item.user.phone}`);
+                    }}
+                  >
+                    <Feather
+                      name="phone-forwarded"
+                      size={27}
+                      color={colors.text}
+                      // style={{ marginHorizontal: 15 }}
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() =>
+                      Linking.openURL(
+                        `https://wa.me/${changePhone(item.user.phone)}`
+                      )
+                    }
+                  >
+                    <FontAwesome
+                      name="whatsapp"
+                      size={30}
+                      color={colors.text}
+                      style={{ marginLeft: 20 }}
+                    />
+                  </TouchableOpacity>
+                </View>
                 <Pressable
-                  style={[styles.button, styles.buttonOpen]}
+                  style={[styles.button, styles.buttonOpen, {marginHorizontal:0, position: 'absolute', top: -45, right: 0}]}
                   onPress={() => showAlert()}
                 >
-                  <Text style={{ fontSize: 14, color: colors.text, fontWeight: '600' }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: colors.text,
+                      fontWeight: "600",
+                    }}
+                  >
                     ביטול התור
                   </Text>
                 </Pressable>
-
-                <TouchableOpacity
-                  onPress={() => {
-                    Linking.openURL(`tel:${item.user.phone}`);
-                  }}
-                >
-                  <Feather
-                    name="phone-forwarded"
-                    size={27}
-                    color="black"
-                    style={{ marginHorizontal: 15 }}
-                  />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() =>
-                    Linking.openURL(
-                      `https://wa.me/${changePhone(item.user.phone)}`
-                    )
-                  }
-                >
-                  <FontAwesome
-                    name="whatsapp"
-                    size={30}
-                    color="black"
-                    style={{ marginLeft: 20 }}
-                  />
-                </TouchableOpacity>
               </View>
-            </View>
-          ) : (
+            </>
+          ) : ( 
             <View
               style={{
                 width: "95%",
@@ -236,7 +249,13 @@ const Queue = ({
                     deleteQueue(item.user._id, item.postId, selectedDate)
                   }
                 >
-                  <Text style={{ fontSize: 14, color: colors.first, fontWeight: '600' }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: colors.first,
+                      fontWeight: "600",
+                    }}
+                  >
                     שחרור התור
                   </Text>
                 </Pressable>
@@ -244,6 +263,7 @@ const Queue = ({
             </View>
           )}
         </View>
+        //////
       ) : (
         <View
           style={{
@@ -289,7 +309,9 @@ const Queue = ({
               style={[styles.button, styles.buttonOpen]}
               onPress={() => catchQueue()}
             >
-              <Text style={{ fontSize: 14, color: colors.text, fontWeight: '600' }}>
+              <Text
+                style={{ fontSize: 14, color: colors.text, fontWeight: "600" }}
+              >
                 ביטול התור
               </Text>
             </Pressable>
