@@ -88,10 +88,11 @@ export default function MyQueues({ navigation }) {
         </LinearGradient>
       )}
 
-      <View style={{ height: "100%", backgroundColor: "white", paddingBottom: 50 }}>
+      <View style={{ height: "100%", backgroundColor: "white", paddingBottom: 50, width:'100%' }}>
         {Object.keys(queues).length === 0 ? (
-          <View style={{ marginTop: "50%" }}>
-            <Text style={{ textAlign: "center", fontSize: 40 }}>
+          <View style={{display:'flex', alignItems: 'center', justifyContent: 'center',  width:'100%'}}>
+          {/* <View style={{ marginTop: "50%" }}> */}
+            <Text style={{ textAlign: "center", fontSize: 30 }}>
               אין תורים עתידיים
             </Text>
           </View>

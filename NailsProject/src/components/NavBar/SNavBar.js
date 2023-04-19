@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.first,
     width: "100%",
-    height: 70,
+    height: 60,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,

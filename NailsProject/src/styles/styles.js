@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import {View, Text, Image, TextInput, TouchableOpacity} from 'react-native';
 import Constants from "expo-constants";
+import colors from "./colors";
 
 const StatusBarHeight = Constants.statusBarHeight;
 
@@ -94,7 +95,7 @@ const StatusBarHeight = Constants.statusBarHeight;
  
  export const StyledButton = styled.TouchableOpacity`
    padding: 15px;
-   background-color: #B7D3DF;
+   background-color: ${colors.second};
    justify-content: center;
    align-items: center;
    border-radius: 5px;

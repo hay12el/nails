@@ -36,13 +36,15 @@ const Queue = ({
     }
   };
 
-  const AMPM = (hour, first)=> {
-    let minute = '00';
-    if(!first){
-     minute = item.type == 'A' ? '00' : '30';
+  const AMPM = (hour, first) => {
+    let minute = "00";
+    if (!first) {
+      minute = item.type == "A" ? "00" : "30";
     }
-    return parseInt(hour) < 13 ? hour+':'+ minute +'AM' : hour+':'+ minute +'PM';
-  }
+    return parseInt(hour) < 13
+      ? hour + ":" + minute + "AM"
+      : hour + ":" + minute + "PM";
+  };
 
   const deleteQueue = async () => {
     // setThinking(true);
@@ -96,32 +98,35 @@ const Queue = ({
     <View style={{ marginTop: 30 }}>
       {item.iscatched ? (
         <View
-          style={[{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            justifyContent: "flex-start",
-            backgroundColor: "white",
-            marginHorizontal: 3,
-            padding: 20,
-            gap: 10
-          }, item.type == 'A' ? {height: 130,} : {height: 200,}]}
+          style={[
+            {
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+              backgroundColor: "white",
+              marginHorizontal: 3,
+              padding: 20,
+              gap: 10,
+              direction: "rtl",
+            },
+            item.type == "A" ? { height: 130 } : { height: 200 },
+          ]}
         >
           <View
             style={{
               display: "flex",
               flexDirection: "row",
-              alignContent: "center",
+              alignContent: "flex-start",
               justifyContent: "center",
-              direction: "ltr",
-              
+              direction: "rtl",
             }}
           >
             <Text
               style={{
                 textAlign: "center",
                 fontSize: 14,
-                color: 'black',
+                color: "black",
                 direction: "rtl",
               }}
             >
@@ -131,10 +136,11 @@ const Queue = ({
               style={{
                 textAlign: "center",
                 fontSize: 14,
-                color: 'black',
+                color: "black",
+                direction: "rtl",
               }}
             >
-              {`${AMPM(item.hour,true)} - `}
+              {`${AMPM(item.hour, true)} - `}
             </Text>
           </View>
 
@@ -153,7 +159,7 @@ const Queue = ({
                   alignContent: "space-between",
                   justifyContent: "flex-start",
                   direction: "rtl",
-                  width:'100%',
+                  width: "100%",
                 }}
               >
                 <View
@@ -161,9 +167,9 @@ const Queue = ({
                     display: "flex",
                     flexDirection: "row",
                     alignContent: "center",
-                    justifyContent: 'flex-start',
+                    justifyContent: "flex-start",
                     direction: "rtl",
-                    width: 100
+                    width: 100,
                   }}
                 >
                   <TouchableOpacity
@@ -195,7 +201,16 @@ const Queue = ({
                   </TouchableOpacity>
                 </View>
                 <Pressable
-                  style={[styles.button, styles.buttonOpen, {marginHorizontal:0, position: 'absolute', top: -45, right: 0}]}
+                  style={[
+                    styles.button,
+                    styles.buttonOpen,
+                    {
+                      marginHorizontal: 0,
+                      position: "absolute",
+                      top: -45,
+                      right: 0,
+                    },
+                  ]}
                   onPress={() => showAlert()}
                 >
                   <Text
@@ -210,19 +225,22 @@ const Queue = ({
                 </Pressable>
               </View>
             </>
-          ) : ( 
+          ) : (
             <View
-              style={{
-                width: "95%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                margin: 12,
-                backgroundColor: "#f5f5f5",
-                borderRadius: 10,
-                paddingBottom: 10,
-              }}
+              style={[
+                {
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  backgroundColor: "white",
+                  marginHorizontal: 3,
+                  padding: 20,
+                  gap: 10,
+                  direction: "rtl",
+                },
+                item.type == "A" ? { height: 130 } : { height: 200 },
+              ]}
             >
               <View style={{ marginBottom: 18 }}>
                 <Text style={{ fontSize: 16, color: colors.text }}>
@@ -263,48 +281,56 @@ const Queue = ({
             </View>
           )}
         </View>
-        //////
       ) : (
-        <View
-          style={{
-            height: 110,
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-around",
-            direction: "rtl",
-            backgroundColor: "white",
-            borderWidth: 1,
-            padding: 3,
-            paddingBottom: 10,
-            marginHorizontal: 3,
-            marginVertical: 0,
-            backgroundColor: "#fcfcfc",
-          }}
+        //////
+        <Pressable
+        style={[{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          backgroundColor: "white",
+          marginHorizontal: 3,
+          padding: 20,
+          gap: 10,
+          direction: 'rtl'
+        }, {height: 130 * item.gap}]}
+        onPress={() => console.log(item.hour)}
         >
-          <View
+          
+
+
+           <View
             style={{
-              marginTop: 10,
               display: "flex",
-              flexDirection: "column",
-              alignContent: "flex-end",
+              flexDirection: "row",
+              alignContent: "flex-start",
               justifyContent: "center",
+              direction: "rtl",
             }}
           >
             <Text
-              style={{ textAlign: "right", fontSize: 18, color: colors.text }}
+              style={{
+                textAlign: "center",
+                fontSize: 14,
+                color: "black",
+                direction: "rtl",
+              }}
             >
-              {days[selectedDate.getDay()]} {selectedDate.getDate()}/
-              {selectedDate.getMonth() + 1}
+              {AMPM(item.hour + item.gap - 1, true)}
             </Text>
-
             <Text
-              style={{ textAlign: "center", fontSize: 18, color: colors.text }}
+              style={{
+                textAlign: "center",
+                fontSize: 14,
+                color: "black",
+                direction: "rtl",
+              }}
             >
-              {item.hour}:00
+              {`${AMPM(item.hour, true)} - `}
             </Text>
           </View>
-          <View>
+          {/* <View>
             <Pressable
               style={[styles.button, styles.buttonOpen]}
               onPress={() => catchQueue()}
@@ -315,8 +341,8 @@ const Queue = ({
                 ביטול התור
               </Text>
             </Pressable>
-          </View>
-        </View>
+          </View> */}
+        </Pressable>
       )}
       <Message
         open={open}

@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "black",
     height: "100%",
     width: '100%',
-    paddingBottom: 110
+    paddingBottom: 100
   },
   loading: {
     position: "absolute",

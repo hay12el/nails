@@ -48,53 +48,6 @@ const locale = {
       dow: 0, // Monday is the first day of the week.
       doy: 4 // The week that contains Jan 4th is the first week of the year.
     }
-    // longDateFormat: {
-    //   LT: 'HH:mm',
-    //   LTS: 'HH:mm:ss',
-    //   L: 'DD/MM/YYYY',
-    //   LL: 'D MMMM YYYY',
-    //   LLL: 'D MMMM YYYY LT',
-    //   LLLL: 'dddd D MMMM YYYY LT'
-    // },
-    // calendar: {
-    //   sameDay: "[Aujourd'hui à] LT",
-    //   nextDay: '[Demain à] LT',
-    //   nextWeek: 'dddd [à] LT',
-    //   lastDay: '[Hier à] LT',
-    //   lastWeek: 'dddd [dernier à] LT',
-    //   sameElse: 'L'
-    // },
-    // relativeTime: {
-    //   future: 'dans %s',
-    //   past: 'il y a %s',
-    //   s: 'quelques secondes',
-    //   m: 'une minute',
-    //   mm: '%d minutes',
-    //   h: 'une heure',
-    //   hh: '%d heures',
-    //   d: 'un jour',
-    //   dd: '%d jours',
-    //   M: 'un mois',
-    //   MM: '%d mois',
-    //   y: 'une année',
-    //   yy: '%d années'
-    // },
-    // ordinalParse: /\d{1,2}(er|ème)/,
-    // ordinal: function(number) {
-    //   return number + (number === 1 ? 'er' : 'ème');
-    // },
-    // meridiemParse: /PD|MD/,
-    // isPM: function(input) {
-    //   return input.charAt(0) === 'M';
-    // },
-    // in case the meridiem units are not separated around 12, then implement
-    // this function (look at locale/id.js for an example)
-    // meridiemHour : function (hour, meridiem) {
-    //     return /* 0-23 hour, given meridiem token and hour 1-12 */
-    // },
-    // meridiem: function(hours, minutes, isLower) {
-    //   return hours < 12 ? 'PD' : 'MD';
-    // },
   }
 };
 
@@ -376,7 +329,7 @@ const NewQueue = (props) => {
                 nextTitle="הבא"
               /> */}
               <CalendarStrip
-                style={{ height: 150, paddingTop: 20, paddingBottom: 10 }}
+                style={{ height: 130, paddingTop: 20, paddingBottom: 10 }}
                 selectedDate={new Date()}
                 onDateSelected={onDateChange}
                 locale={locale}
@@ -479,61 +432,10 @@ const NewQueue = (props) => {
                     })}
                   </View>
                 ) : (
-                  // {selectedDate.getDay() != 5 && selectedDate.getDay() != 6 ? (
-                  //   <FlatList
-                  //     horizontal
-                  //     data={hours}
-                  //     renderItem={({ item }) => {
-                  //       //check if hour is catched
-                  //       let flag = false;
-                  //       for (let x in catchH) {
-                  //         if (catchH[x] == item.hour) {
-                  //           flag = true;
-                  //         }
-                  //       }
-                  //       if (flag) {
-                  //         item.color = "white";
-                  //         item.iscatched = true;
-                  //         return <></>;
-                  //       } else {
-                  //         item.color = "white";
-                  //         item.iscatched = false;
-                  //         return (
-                  //           <TouchableOpacity
-                  //             onPress={() => {
-                  //               if (item.iscatched) {
-                  //                 console.log("catched " + item.hour);
-                  //               } else {
-                  //                 setChoosenHour(item.hour);
-                  //                 setMassage(!massage);
-                  //               }
-                  //             }}
-                  //           >
-                  //             <View
-                  //               style={[
-                  //                 styles.sectionBox,
-                  //                 { backgroundColor: "white" },
-                  //               ]}
-                  //             >
-                  //               <Text
-                  //                 style={{
-                  //                   textAlign: "right",
-                  //                   fontSize: 19,
-                  //                   color: colors.text,
-                  //                 }}
-                  //               >
-                  //                 {" "}
-                  //                 {item.hour}:00
-                  //               </Text>
-                  //             </View>
-                  //           </TouchableOpacity>
-                  //         );
-                  //       }
-                  //     }}
-                  //   />
                   <View
                     style={{
-                      height: 90,
+                      display: "flex",
+                      width: "100%",
                       justifyContent: "center",
                       alignItems: "center",
                     }}

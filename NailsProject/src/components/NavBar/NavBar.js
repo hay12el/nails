@@ -57,14 +57,14 @@ const NavBar = (props) => {
         >
           <View>
             <TouchableOpacity onPress={() => navigation.navigate("HomePage")}>
-              <Ionicons name="home-outline" size={30} color={colors.text} />
+              <Ionicons name="home-outline" size={25} color={colors.text} />
             </TouchableOpacity>
           </View>
           {user.isAdmin ? (
             <TouchableOpacity
               onPress={() => navigation.navigate("Admin_pannel")}
             >
-              <FontAwesome name="calendar" size={28} color={colors.text} />
+              <FontAwesome name="calendar" size={22} color={colors.text} />
             </TouchableOpacity>
           ) : (
             <>
@@ -72,7 +72,7 @@ const NavBar = (props) => {
                 onPress={() => navigation.navigate("MyQueues")}
                 style={{ marginRight: 10 }}
               >
-                <FontAwesome name="calendar" size={28} color={colors.text} />
+                <FontAwesome name="calendar" size={22} color={colors.text} />
               </TouchableOpacity>
 
               <View>
@@ -86,13 +86,13 @@ const NavBar = (props) => {
                   )
                 }
               >
-                <FontAwesome5 name="waze" size={29} color={colors.text} />
+                <FontAwesome5 name="waze" size={25} color={colors.text} />
               </TouchableOpacity>
             </>
           )}
 
           <TouchableOpacity onPress={() => setMassage(true)}>
-            <Entypo name="log-out" size={29} color={colors.text} />
+            <Entypo name="log-out" size={22} color={colors.text} />
           </TouchableOpacity>
         </LinearGradient>
       </View>

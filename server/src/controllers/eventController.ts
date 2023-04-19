@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import moment from "moment";
+import { IEvent } from "../interfaces/interfaces";
 import Event from "../models/Event";
 import User from "../models/User";
 
@@ -99,21 +100,28 @@ export const deleteMyQueue = async (req: Request, res: Response) => {
 export const AdminGetDayQueues = async (req: Request, res: Response) => {
   try {
     //@ts-ignore
-    const timeAsString = req.query.date.split('T')[0];
-    
+    const timeAsString = req.query.date.split("T")[0];
+
     //@ts-ignore
     const Day = returnDate(req.query.date);
     let nextDay = new Date(Day);
     nextDay.setDate(Day.getDate() + 1);
-    
-    //@ts-ignore
-    const queues = await Event.find({ admin: req.userId, time: {$gte: Day, $lt: nextDay}}).sort('time');
 
-    const objectToReturn = {}
+    const queues = await Event.find({
+      //@ts-ignore
+      admin: req.userId,
+      time: { $gte: Day, $lt: nextDay },
+    }).sort("time");
+    const usersId = queues.map((event: IEvent) => event.connectTo);
+    const users = await User.find({ _id: { $in: usersId } }).select(
+      "username phone email isAdmin"
+    );
+
+    const objectToReturn = {};
     let LST = [];
-    for (let queue of queues) {
-      let user = await User.findOne({ _id: queue.connectTo }).select(
-        "username phone email isAdmin"
+    for (let i = 0; i < queues.length; i++) {
+      let user = users.find(
+        (us) => us._id.toString() == queues[i].connectTo.toString()
       );
       let newObj = {
         user: {
@@ -121,21 +129,51 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
           username: user?.username,
           email: user?.email,
           phone: user?.phone,
-          isAdmin: user?.isAdmin
+          isAdmin: user?.isAdmin,
         },
-        postId: queue._id,
-        time: queue.time,
-        type: queue.type,
+        postId: queues[i]._id,
+        time: queues[i].time,
+        type: queues[i].type,
         //@ts-ignore
-        hour: queue.time.getHours() -3,
-        iscatched: true
+        hour: queues[i].time.getHours() - 3,
+        iscatched: true,
       };
-      LST.push(newObj)
+      if (
+        i < queues.length - 1 &&
+        //@ts-ignore
+        queues[i + 1].time.getHours() - queues[i].time.getHours() > 1
+      ) {
+        //@ts-ignore
+        let newObjj = {
+          user: {
+            userId: user?._id,
+            username: user?.username,
+            email: user?.email,
+            phone: user?.phone,
+            isAdmin: user?.isAdmin,
+          },
+          postId: queues[i]._id,
+          //@ts-ignore
+          time: addHours(queues[i].time, 1),
+          type: "M",
+          //@ts-ignore
+          hour: queues[i].time.getHours() - 2,
+          //@ts-ignore
+          gap: queues[i + 1].time.getHours() - queues[i].time.getHours(),
+          iscatched: false,
+        };
+        LST.push(newObjj);
+      }
+      LST.push(newObj);
     }
-    LST.sort()
+    LST.sort(function (a, b) {
+      //@ts-ignore
+      return new Date(a.time) - new Date(b.time);
+    });
     //@ts-ignore
     objectToReturn[timeAsString] = LST;
-    res.send({events: objectToReturn}).status(200);
+    res.send({ events: objectToReturn }).status(200);
+    // res.sendStatus(200);
   } catch (err: any) {
     console.log(err.message);
     res.sendStatus(404);
@@ -143,18 +181,29 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
 };
 
 export const AdminDeleteQueue = async (req: Request, res: Response) => {
-  try{
-    const {userId, date, queueId} = req.body;
+  try {
+    const { userId, date, queueId } = req.body;
 
-    await User.findOneAndUpdate({_id: userId}, { $pull: { queues: queueId }})
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { queues: queueId } }
+    );
 
-    await Event.findOneAndDelete({_id: queueId})
-    
-    req.query.date = date
+    await Event.findOneAndDelete({ _id: queueId });
+
+    req.query.date = date;
     AdminGetDayQueues(req, res);
-  }catch(err){
+  } catch (err) {
     res.sendStatus(404);
   }
+};
+
+//@ts-ignore
+const addHours = (date, hours) => {
+  const newDate = new Date(date);
+  newDate.setHours(date.getHours() + hours);
+
+  return newDate;
 }
 
 const returnDate = (date: string) => {

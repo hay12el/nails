@@ -139,7 +139,7 @@ export default function Admin_pannel({ navigation }) {
   useEffect(() => {
     setThinking(true);
     const getData = async () => {
-      await API.get("/event/AdminGetDayQueues", {
+      API.get("/event/AdminGetDayQueues", {
         params: { date: selectedDate, token: user.token },
       })
         .then((response) => {
@@ -198,81 +198,6 @@ export default function Admin_pannel({ navigation }) {
           }}
           showOnlySelectedDayItems={true}
         />
-
-        {/* <CalendarPicker
-          startFromMonday={false}
-          weekdays={["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"]}
-          todayBackgroundColor={colors.second}
-          selectedDayColor={colors.first}
-          months={[
-            "ינואר",
-            "פברואר",
-            "מרץ",
-            "אפריל",
-            "מאי",
-            "יוני",
-            "יולי",
-            "אוגוסט",
-            "ספטמבר",
-            "אוקטובר",
-            "נובמבר",
-            "דצמבר",
-          ]}
-          onDateChange={onDateChange}
-          previousTitle="הקודם"
-          nextTitle="הבא"
-        />
-        
-        <View style={styles.FLcontainer}>
-          {selectedDate.getDay() != 5 && selectedDate.getDay() != 6 ? (
-            <FlatList
-              data={hours}
-              renderItem={({ item }) => {
-                //check if hour is catched
-                let flag = false;
-                let user = {};
-                let pId = "";
-                for (let x in catchH) {
-                  if (catchH[x].hour == item.hour) {
-                    flag = true;
-                    user = catchH[x].user;
-                    pId = catchH[x].postId;
-                    break;
-                  }
-                }
-                if (flag) {
-                  item.iscatched = true;
-                  item.user = user;
-                  item.postId = pId;
-                } else {
-                  item.iscatched = false;
-                  item.user = {};
-                  item.postId = "";
-                }
-                return (
-                  <Queue
-                    item={item}
-                    selectedDate={selectedDate}
-                    setThinking={setThinking}
-                    setCatchH={setCatchH}
-                    setIndicator={setIndicator}
-                    indicator={indicator}
-                  />
-                );
-              }}
-            />
-          ) : (
-            <View
-              style={{
-                height: 90,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ fontSize: 22 }}>אין תורים ביום הזה</Text>
-            </View>
-          )}
-        </View> */}
       </View>
 
       <View style={styles.menuNavigator}>
