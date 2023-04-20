@@ -1,5 +1,6 @@
 {
   "cli": {
+    "requireCommit": true,
     "version": ">= 3.9.3"
   },
   "build": {
@@ -14,6 +15,9 @@
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType" : "apk"
       }
     },
     "production": {

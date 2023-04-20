@@ -1,6 +1,4 @@
-
 {
-  
   "expo": {
     "name": "NailsProject",
     "slug": "NailsProject",
@@ -23,7 +21,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.hay12el.NailsProject"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,6 +37,11 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b94bdc4e-7939-46b4-849e-9e3b2485ebff"
+      }
+    }
   }
 }
