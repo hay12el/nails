@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import colors from "../../styles/colors";
 
 export const styles = StyleSheet.create({
   linearGradient: {
@@ -15,7 +16,8 @@ export const styles = StyleSheet.create({
   linearGradient1: {
     height: 65,
     width: "100%",
-    borderRadius: 30,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -57,15 +59,15 @@ export const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     alignItems: "center",
     justifyContent: "center",
+
   },
   touchiArrowIOS: {
-    backgroundColor: "#8785A2",
+    backgroundColor: colors.first,
     position: "absolute",
     bottom: 0,
     left: 0,
     height: 65,
     width: "100%",
-    borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
   },

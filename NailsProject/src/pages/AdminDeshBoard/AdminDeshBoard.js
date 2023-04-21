@@ -11,7 +11,6 @@ import {
   Alert,
 } from "react-native";
 import { styles } from "./SAdminDeshBoard";
-import CalendarPicker from "react-native-calendar-picker";
 import { Overlay } from "react-native-elements";
 import Constants from "expo-constants";
 const StatusBarHeight = Constants.statusBarHeight;

@@ -12,7 +12,6 @@ import {
   ActivityIndicator,
   Platform,
 } from "react-native";
-import CalendarPicker from "react-native-calendar-picker";
 import { FontAwesome } from "@expo/vector-icons";
 import { Overlay } from "react-native-elements";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,6 +20,8 @@ import { useNavigation } from "@react-navigation/native";
 import { styles } from "./SNewQueue";
 import colors from "../../styles/colors";
 import CalendarStrip from "react-native-calendar-strip";
+import moment from 'moment'
+import 'moment/locale/he'
 
 const days = {
   0: "ראשון",
@@ -33,23 +34,31 @@ const days = {
 };
 
 const locale = {
-  name: 'he',
+  name: "he",
   config: {
-    months: 'ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובר_נובמבר_דצמבר'.split(
-      '_'
-    ),
-    monthsShort: 'ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובק_נובמבר_דצמבר'.split(
-      '_'
-    ),
-    weekdays: 'ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת'.split('_'),
-    weekdaysShort:'ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת'.split('_'),
-    weekdaysMin: 'ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת'.split('_'),
+    months:
+      "ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובר_נובמבר_דצמבר".split(
+        "_"
+      ),
+    monthsShort:
+      "ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובק_נובמבר_דצמבר".split(
+        "_"
+      ),
+    weekdays: "ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת".split("_"),
+    weekdaysShort: "ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת".split("_"),
+    weekdaysMin: "ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת".split("_"),
     week: {
-      dow: 0, // Monday is the first day of the week.
-      doy: 4 // The week that contains Jan 4th is the first week of the year.
+      dow : 0
     }
-  }
+  },
 };
+
+moment.updateLocale('he', {
+  week : {
+      dow : 0,
+      doy : 0
+   }
+});
 
 const NewQueue = (props) => {
   const user = useSelector((state) => state.user);
@@ -196,17 +205,6 @@ const NewQueue = (props) => {
           <FontAwesome name="plus" size={32} color="white" />
         </LinearGradient>
       </TouchableOpacity>
-      {/* ) : (
-        <TouchableOpacity
-          activeOpacity={0.1}
-          onPress={() => visi()}
-          style={styles.touchi}
-        >
-          <View style={styles.linearGradient}>
-            <FontAwesome name="plus" size={32} color="white" />
-          </View>
-        </TouchableOpacity>
-     )*/}
 
       <Modal
         visible={toApear}
@@ -316,18 +314,7 @@ const NewQueue = (props) => {
               </View>
             </Modal>
 
-            <ScrollView>
-              {/* <CalendarPicker
-                startFromMonday={false}
-                weekdays={daysF}
-                minDate={new Date()}
-                todayBackgroundColor={colors.second}
-                selectedDayColor={colors.first}
-                months={months}
-                onDateChange={onDateChange}
-                previousTitle="הקודם"
-                nextTitle="הבא"
-              /> */}
+            <ScrollView style={{width: "100%"}}>
               <CalendarStrip
                 style={{ height: 130, paddingTop: 20, paddingBottom: 10 }}
                 selectedDate={new Date()}
@@ -335,14 +322,12 @@ const NewQueue = (props) => {
                 locale={locale}
                 numDaysInWeek={7}
                 daySelectionAnimation={{
-                  type: 'background',
-
+                  type: "background",
                 }}
               />
-
               <LinearGradient
-                colors={["white", "white", "#faf7f7"]}
-                locations={[0.0, 0.4, 1.0]}
+                colors={['#fff', '#fcfcfc', '#f2f2f2']}
+                locations={[0.0, 0.7, 1.0]}
                 style={{
                   height: 80,
                   width: "100%",
@@ -351,7 +336,8 @@ const NewQueue = (props) => {
                   alignContent: "center",
                   display: "flex",
                   flexDirection: "column",
-                  borderRadius: 30,
+                  borderBottomLeftRadius: 30,
+                  borderBottomRightRadius: 30,
                   marginTop: 0,
                 }}
               >
@@ -407,13 +393,14 @@ const NewQueue = (props) => {
                                 setMassage(!massage);
                               }
                             }}
-                            key={item.hour}
+                            key={item.key}
                           >
                             <View
                               style={[
                                 styles.sectionBox,
                                 { backgroundColor: "white" },
                               ]}
+                              key={item.hour}
                             >
                               <Text
                                 style={{
@@ -439,6 +426,7 @@ const NewQueue = (props) => {
                       justifyContent: "center",
                       alignItems: "center",
                     }}
+                    key={"6456"}
                   >
                     <Text style={{ fontSize: 22 }}>אין תורים ביום הזה</Text>
                   </View>
@@ -461,11 +449,11 @@ const NewQueue = (props) => {
               style={styles.touchiArrow}
             >
               <LinearGradient
-                colors={["#f0eded", "#fafafa", "white"]}
+                colors={[colors.second, colors.first, colors.first]}
                 locations={[0.0, 0.3, 1.0]}
                 style={styles.linearGradient1}
               >
-                <FontAwesome name="arrow-down" size={30} color="#918fb3" />
+                <FontAwesome name="arrow-down" size={30} color={colors.forth} />
               </LinearGradient>
             </TouchableOpacity>
           ) : (
@@ -475,11 +463,11 @@ const NewQueue = (props) => {
               style={styles.touchiArrowIOS}
             >
               <LinearGradient
-                colors={["#e6e6e6", "white", "white"]}
+                colors={[colors.second, colors.first, colors.first]}
                 locations={[0.0, 0.3, 1.0]}
                 style={styles.linearGradient1}
               >
-                <FontAwesome name="arrow-down" size={30} color="#918fb3" />
+                <FontAwesome name="arrow-down" size={30} color={colors.second} />
               </LinearGradient>
             </TouchableOpacity>
           )}
