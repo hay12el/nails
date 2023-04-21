@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { getAdminProperties } from './propertiesController'
+import { getAdminProperties } from "./propertiesController";
 import User from "../models/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const checkAuth = async (req: Request, res: Response) => {
-  try{
+  try {
     //@ts-ignore
     if (!req.userId) {
       res.status(401).send("problem");
@@ -19,7 +19,7 @@ const checkAuth = async (req: Request, res: Response) => {
       getAdminProperties(req, res);
       // res.json({ user: user }).status(200);
     }
-  }catch(err){
+  } catch (err) {
     res.sendStatus(401);
   }
 };
@@ -105,19 +105,16 @@ const REGISTER = async (req: Request, res: Response) => {
   }
 };
 
-const GetAdminUsers = async (req: Request, res:Response) => {
-  try{
+const GetAdminUsers = async (req: Request, res: Response) => {
+  try {
     //@ts-ignore
     const adminId = req.userId;
-    console.log(adminId);
-    
-  
-    const users = await User.find({myAdmin: adminId});
+    const users = await User.find({ myAdmin: adminId });
 
-    res.send({users: users}).status(200);
-  }catch(err){
+    res.send({ users: users }).status(200);
+  } catch (err) {
     res.sendStatus(404);
   }
-}
+};
 
 export { LOGIN, REGISTER, checkAuth, GetAdminUsers };

@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
     marginTop: 15,
-    backgroundColor: colors.second,
+    backgroundColor: colors.first,
     padding: 10,
   },
   imageSection: {
@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
     marginTop: 15,
-    backgroundColor: colors.first,
+    backgroundColor: colors.second,
     padding: 10,
   },
   textInput: {
@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
     gap: 8
   },
   btn: {
-    backgroundColor: colors.first,
+    backgroundColor: colors.second,
     width: 90,
     height: 40,
     padding: 0,

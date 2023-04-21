@@ -35,7 +35,6 @@ const HomePage = () => {
 
           <WorkScroll />
           <Links />
-          <UserScroll />
         </Animated.ScrollView>
       </View>
       <NavBar />

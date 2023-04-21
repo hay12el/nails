@@ -1,7 +1,7 @@
 import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import React, { useState } from "react";
 import { styles } from "./SAdminEditor";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import photos from "../../utils/photos";
 import colors from "../../styles/colors";
 import * as ImagePicker from "expo-image-picker";
@@ -9,12 +9,13 @@ import {
   FontAwesome,
   //@ts-ignore
 } from "@expo/vector-icons";
-import  {SETABOUTME} from '../../redux/Properties'
+import { SETABOUTME } from "../../redux/Properties";
 import { Overlay } from "react-native-elements";
+import UserScroll from "../usersScroll/UserScroll";
 
 const AdminEditor = () => {
   const user = useSelector((state) => state.user);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [text, onChangeText] = useState("");
 
   /////////// To Change!!!!!
@@ -34,9 +35,9 @@ const AdminEditor = () => {
     } catch (err) {}
   };
 
-  const handleTextChange = (text)=> {
-    dispatch(SETABOUTME({aboutMe : text }));
-  }
+  const handleTextChange = (text) => {
+    dispatch(SETABOUTME({ aboutMe: text }));
+  };
 
   ////////////
 
@@ -56,6 +57,7 @@ const AdminEditor = () => {
       <Text style={{ textAlign: "left", color: colors.text }}>
         לכל שאלה תרגישי חופשי ליצור איתנו קשר
       </Text>
+      <UserScroll />
       <View style={styles.aboutMeSection}>
         <Text
           style={{
@@ -233,7 +235,10 @@ const AdminEditor = () => {
           ) : null}
 
           {photos.photos.map((photo) => (
-            <TouchableOpacity onPress={() => handleImageOpen(photo)} key={photo.key}>
+            <TouchableOpacity
+              onPress={() => handleImageOpen(photo)}
+              key={photo.key}
+            >
               <Image
                 source={{
                   uri: photo.uri,
@@ -265,7 +270,7 @@ const AdminEditor = () => {
             width: "100%",
           }}
         >
-          <TouchableOpacity style={styles.btn1} onPress={pickImage}>
+          <TouchableOpacity style={[styles.btn1, {backgroundColor: colors.first}]} onPress={pickImage}>
             <Text
               style={{ fontSize: 14, fontWeight: "600", color: colors.text }}
             >
