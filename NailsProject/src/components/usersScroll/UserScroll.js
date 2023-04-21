@@ -7,23 +7,26 @@ import Title from "../Title/Title";
 import {styles} from './SUserScroll';
 
 const UserScroll = () => {
-  const user = useSelector((state) => state);
+  const user = useSelector((state) => state.user);
   const [users, setUsers] = useState([]);
 
-//   useEffect(async () => {
-//     API
-//       .get("/users/getAdminUsers", {
-//         params: {
-//           admin: user.id.toString(),
-//         },
-//       })
-//       .then((response) => {
-//         setUsers(response.data);
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//       });
-//   }, []);
+  useEffect(() => {
+    const getUsers = async () => {
+      API
+      .get("/user/getAdminUsers", {
+        params: {
+          token: user.token
+        },
+      })
+      .then((response) => {
+        setUsers(response.data.users);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+    getUsers();
+    }, []);
 
   return (
     <View style={styles.constiner}>

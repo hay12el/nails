@@ -105,4 +105,19 @@ const REGISTER = async (req: Request, res: Response) => {
   }
 };
 
-export { LOGIN, REGISTER, checkAuth };
+const GetAdminUsers = async (req: Request, res:Response) => {
+  try{
+    //@ts-ignore
+    const adminId = req.userId;
+    console.log(adminId);
+    
+  
+    const users = await User.find({myAdmin: adminId});
+
+    res.send({users: users}).status(200);
+  }catch(err){
+    res.sendStatus(404);
+  }
+}
+
+export { LOGIN, REGISTER, checkAuth, GetAdminUsers };
