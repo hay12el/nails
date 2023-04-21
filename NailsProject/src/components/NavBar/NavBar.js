@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, Linking } from "react-native";
 import React, { useState } from "react";
 import { styles } from "./SNavBar";
-import Color from '../../styles/colors'
+import Color from "../../styles/colors";
 //@ts-ignore
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -25,7 +25,7 @@ import colors from "../../styles/colors";
 const NavBar = (props) => {
   const [massage, setMassage] = useState(false);
   const user = useSelector((state) => state.user);
-  const links = useSelector(state => state.properties.Linkim)
+  const links = useSelector((state) => state.properties.Linkim);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const rreload = props.rreload;
@@ -61,11 +61,18 @@ const NavBar = (props) => {
             </TouchableOpacity>
           </View>
           {user.isAdmin ? (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Admin_pannel")}
-            >
-              <FontAwesome name="calendar" size={22} color={colors.text} />
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Admin_pannel")}
+              >
+                <FontAwesome name="calendar" size={22} color={colors.text} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Editing")}
+              >
+                <FontAwesome name="edit" size={22} color={colors.text} />
+              </TouchableOpacity>
+            </>
           ) : (
             <>
               <TouchableOpacity
@@ -79,13 +86,7 @@ const NavBar = (props) => {
                 <NewQueue rreload={rreload} />
               </View>
 
-              <TouchableOpacity
-                onPress={() =>
-                  Linking.openURL(
-                    links.wase
-                  )
-                }
-              >
+              <TouchableOpacity onPress={() => Linking.openURL(links.wase)}>
                 <FontAwesome5 name="waze" size={25} color={colors.text} />
               </TouchableOpacity>
             </>

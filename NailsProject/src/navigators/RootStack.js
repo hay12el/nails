@@ -5,6 +5,7 @@ import MyQueues from "../pages/MyQueues/MyQueues";
 import Admin_pannel from "../pages/AdminDeshBoard/AdminDeshBoard";
 import Login from "../pages/Login/Login";
 import SignUp from "../pages/SignUp/SignUp";
+import Editing from '../pages/Editing/Editing';
 
 const Stack = createStackNavigator();
 
@@ -61,6 +62,16 @@ export const AuthStackscreen = () => {
       <Stack.Screen
         name="Admin_pannel"
         component={Admin_pannel}
+        options={{
+          headerShown: false,
+          presentation: "card",
+          animationTypeForReplace: "push",
+          animation: "slide_from_right",
+        }}
+      />
+      <Stack.Screen
+        name="Editing"
+        component={Editing}
         options={{
           headerShown: false,
           presentation: "card",

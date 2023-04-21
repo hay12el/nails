@@ -9,7 +9,7 @@ import Links from "../../components/Links/Links";
 import WorkScroll from "../../components/WorkScroll/WorkScroll";
 import Header from "../../components/Header/Header";
 import AboutMe from "../../components/AboutMe/AboutMe";
-import UserScroll from "../../components/UserScroll/UserScroll";
+import UserScroll from "../../components/usersScroll/UserScroll";
 import AdminEditor from "../../components/AdminEditor/AdminEditor";
 
 const HomePage = () => {
@@ -37,9 +37,6 @@ const HomePage = () => {
 
           <WorkScroll />
           <Links />
-          {user.isAdmin ? 
-          <AdminEditor />
-          : null}
         </Animated.ScrollView>
       </View>
       <NavBar />
