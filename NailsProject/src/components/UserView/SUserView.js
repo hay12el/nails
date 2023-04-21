@@ -3,8 +3,8 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     item: {
       alignItems: "center",
-      width: 150,
-      height: "90%",
+      width: 130,
+      height: 150,
       borderRadius: 20,
       shadowColor: "#000",
       shadowOffset: { width: 2, height: 4 },

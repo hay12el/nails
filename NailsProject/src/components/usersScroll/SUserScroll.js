@@ -11,6 +11,6 @@ export const styles = StyleSheet.create({
       width: "100%",
       backgroundColor: colors.second,
       marginTop: 30,
-      paddingBottom: 10
+      paddingVertical: 20
     },
   });

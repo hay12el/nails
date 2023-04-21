@@ -15,7 +15,7 @@ const UserView = ({ user }) => {
   return (
     <View style={styles.item}>
       <View style={{ height: "45%", justifyContent: "center" }}>
-        <Feather name="user" size={40} />
+        <Feather name="user" size={35} />
       </View>
       <Text style={{ fontSize: 18 }}>{user.username}</Text>
       <View style={styles.down}>
@@ -27,7 +27,7 @@ const UserView = ({ user }) => {
         >
           <FontAwesome
             name="whatsapp"
-            size={40}
+            size={30}
             color="black"
             style={{ marginLeft: 20 }}
           />
@@ -40,7 +40,7 @@ const UserView = ({ user }) => {
         >
           <Feather
             name="phone-forwarded"
-            size={37}
+            size={30}
             color="black"
             style={{ marginHorizontal: 15 }}
           />
