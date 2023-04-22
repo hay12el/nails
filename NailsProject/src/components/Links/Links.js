@@ -23,18 +23,18 @@ const Links = () => {
         <View style={styles.IconBar}>
           <TouchableOpacity
             onPress={() => {
-              Linking.openURL(links.instagram);
-            }}
-          >
-            <AntDesign name="instagram" size={40} color={colors.text} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => {
               Linking.openURL(links.tiktok);
             }}
           >
             <FontAwesome5 name="tiktok" size={40} color={colors.text} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL(links.instagram);
+            }}
+          >
+            <AntDesign name="instagram" size={40} color={colors.text} />
           </TouchableOpacity>
 
           <TouchableOpacity

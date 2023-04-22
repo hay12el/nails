@@ -20,7 +20,6 @@ import { Agenda, LocaleConfig } from "react-native-calendars";
 import Queue from "../../components/QueueA/Queue";
 import NavBar from "../../components/NavBar/NavBar";
 import API from "../../api/api";
-import colors from "../../styles/colors";
 
 export default function Admin_pannel({ navigation }) {
   const user = useSelector((state) => state.user);
@@ -125,6 +124,7 @@ export default function Admin_pannel({ navigation }) {
       </View>
     );
   };
+  
 
   const rowHasChanged = (r1, r2) => {
     return r1.name !== r2.name;

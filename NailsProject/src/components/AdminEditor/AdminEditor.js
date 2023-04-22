@@ -12,6 +12,7 @@ import {
 import { SETABOUTME } from "../../redux/Properties";
 import { Overlay } from "react-native-elements";
 import UserScroll from "../usersScroll/UserScroll";
+import API from "../../api/api";
 
 const AdminEditor = () => {
   const user = useSelector((state) => state.user);
@@ -35,8 +36,17 @@ const AdminEditor = () => {
     } catch (err) {}
   };
 
-  const handleTextChange = (text) => {
-    dispatch(SETABOUTME({ aboutMe: text }));
+  const handleTextChange = async (text) => {
+    try {
+      API.post("/properties/changeAboutMe", {
+        token: user.token,
+        aboutMe: text,
+      }).then(response => {
+        dispatch(SETABOUTME({ aboutMe: text }));
+      })
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   ////////////
@@ -270,7 +280,10 @@ const AdminEditor = () => {
             width: "100%",
           }}
         >
-          <TouchableOpacity style={[styles.btn1, {backgroundColor: colors.first}]} onPress={pickImage}>
+          <TouchableOpacity
+            style={[styles.btn1, { backgroundColor: colors.first }]}
+            onPress={pickImage}
+          >
             <Text
               style={{ fontSize: 14, fontWeight: "600", color: colors.text }}
             >

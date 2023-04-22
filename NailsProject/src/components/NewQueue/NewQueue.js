@@ -20,8 +20,8 @@ import { useNavigation } from "@react-navigation/native";
 import { styles } from "./SNewQueue";
 import colors from "../../styles/colors";
 import CalendarStrip from "react-native-calendar-strip";
-import moment from 'moment'
-import 'moment/locale/he'
+import moment from "moment";
+import "moment/locale/he";
 
 const days = {
   0: "ראשון",
@@ -48,61 +48,31 @@ const locale = {
     weekdaysShort: "ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת".split("_"),
     weekdaysMin: "ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת".split("_"),
     week: {
-      dow : 0
-    }
+      dow: 0,
+    },
   },
 };
 
-moment.updateLocale('he', {
-  week : {
-      dow : 0,
-      doy : 0
-   }
+moment.updateLocale("he", {
+  week: {
+    dow: 0,
+    doy: 0,
+  },
 });
 
 const NewQueue = (props) => {
   const user = useSelector((state) => state.user);
-  const navigation = useNavigation();
   const [thinking, setThinking] = useState(false);
   const [indicator, setIndicator] = useState(false);
   const [toApear, SetApearence] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  // const { user } = useContext(UserContext);
   const [Success, setSuccess] = useState(false);
   const [Error, setError] = useState(false);
   const [visible, setVisible] = useState(false);
   const [massage, setMassage] = useState(false);
-  const [catchH, setCatchH] = useState([]);
-  const [choousenHour, setChoosenHour] = useState(0);
-  const [hours, setHours] = useState([
-    { hour: 9, key: "1", color: "#d3ffa3", iscatched: false },
-    { hour: 10, key: "2", color: "#d3ffa3", iscatched: false },
-    { hour: 11, key: "3", color: "#d3ffa3", iscatched: false },
-    { hour: 12, key: "4", color: "#d3ffa3", iscatched: false },
-    { hour: 13, key: "11", color: "#d3ffa3", iscatched: false },
-    { hour: 14, key: "12", color: "#d3ffa3", iscatched: false },
-    { hour: 15, key: "5", color: "#d3ffa3", iscatched: false },
-    { hour: 16, key: "6", color: "#d3ffa3", iscatched: false },
-    { hour: 17, key: "7", color: "#d3ffa3", iscatched: false },
-    { hour: 18, key: "8", color: "#d3ffa3", iscatched: false },
-    { hour: 19, key: "9", color: "#d3ffa3", iscatched: false },
-    { hour: 20, key: "10", color: "#d3ffa3", iscatched: false },
-  ]);
-  const months = [
-    "ינואר",
-    "פברואר",
-    "מרץ",
-    "אפריל",
-    "מאי",
-    "יוני",
-    "יולי",
-    "אוגוסט",
-    "ספטמבר",
-    "אוקטובר",
-    "נובמבר",
-    "דצמבר",
-  ];
-  const daysF = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+  const [type, setType] = useState("");
+  const [choousenHour, setChoosenHour] = useState({});
+  const [availableHours, setAvailableHours] = useState([]);
   const rreload = props.rreload;
 
   const addQueue = async () => {
@@ -111,7 +81,8 @@ const NewQueue = (props) => {
     API.post("/event/addNewQueue", {
       token: user.token,
       time: selectedDate,
-      hour: choousenHour,
+      hour: choousenHour.text.split(":")[0],
+      type: choousenHour.type,
       myAdmin: user.myAdmin,
     })
       .then(async (response) => {
@@ -143,28 +114,72 @@ const NewQueue = (props) => {
     setSelectedDate(a);
   };
 
+const hourAsType = (hour, type) => {
+    var hourToReurn = { text: "", type: "" };
+    switch (type) {
+      case "1":
+        if (hour % 1 != 0) {
+          hourToReurn.text =
+            Math.floor(hour) + ":30 - " + (Math.floor(hour) + 1) + ":30";
+          hourToReurn.type = "B";
+        } else {
+          hourToReurn.text = hour + ":00 - " + (hour + 1) + ":00";
+          hourToReurn.type = "A";
+        }
+        break;
+      case "2":
+        if (hour % 1 != 0) {
+          hourToReurn.text =
+            Math.floor(hour) + ":30 - " + (Math.floor(hour) + 2) + ":00";
+          hourToReurn.type = "D";
+        } else {
+          hourToReurn.text = hour + ":00 - " + (hour + 1) + ":30";
+          hourToReurn.type = "C";
+        }
+        break;
+      case "3":
+        if (hour % 1 != 0) {
+          hourToReurn.text =
+            Math.floor(hour) + ":30 - " + (Math.floor(hour) + 1) + ":00";
+          hourToReurn.type = "F";
+        } else {
+          hourToReurn.text = hour + ":00 - " + hour + ":30";
+          hourToReurn.type = "E";
+        }
+        break;
+
+      default:
+        break;
+    }
+    return hourToReurn;
+};
+
   useEffect(() => {
-    const getData = async () => {
-      let x = selectedDate;
-      if (x.getDay() == 6 || x.getDay() == 5) {
-        setThinking(false);
-        setCatchH([9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
-      } else {
-        setThinking(true);
-        API.get("/event/getDayQueues", {
-          params: { date: selectedDate, admin: user.myAdmin },
-        })
-          .then((response) => {
-            setThinking(false);
-            setCatchH(response.data.events);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    };
-    getData();
+    setType("");
+    setAvailableHours([]);
   }, [selectedDate, indicator]);
+
+  const getData = async (type) => {
+    setType(type)
+    let x = selectedDate;
+    if (x.getDay() == 6 || x.getDay() == 5) {
+      setThinking(false);
+    } else {
+      setThinking(true);
+      API.get("/event/getDayQueues", {
+        params: { date: selectedDate, admin: user.myAdmin, type: type },
+      })
+        .then((response) => {
+          setThinking(false);
+          setAvailableHours(
+            response.data.events.map((x) => hourAsType(x, type))
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
 
   const toggleOverlay = () => {
     setSuccess(true);
@@ -287,7 +302,8 @@ const NewQueue = (props) => {
                 >
                   <Text style={styles.text}>
                     לקבוע לך תור לתאריך {selectedDate.getUTCDate()}/
-                    {selectedDate.getMonth() + 1} בשעה {choousenHour}:00 ?
+                    {selectedDate.getMonth() + 1} בין השעות {choousenHour.text}{" "}
+                    ?
                   </Text>
                 </View>
                 <View style={styles.buttons}>
@@ -314,7 +330,7 @@ const NewQueue = (props) => {
               </View>
             </Modal>
 
-            <ScrollView style={{width: "100%"}}>
+            <ScrollView style={{ width: "100%" }}>
               <CalendarStrip
                 style={{ height: 130, paddingTop: 20, paddingBottom: 10 }}
                 selectedDate={new Date()}
@@ -326,7 +342,7 @@ const NewQueue = (props) => {
                 }}
               />
               <LinearGradient
-                colors={['#fff', '#fcfcfc', '#f2f2f2']}
+                colors={["#fff", "#fcfcfc", "#f2f2f2"]}
                 locations={[0.0, 0.7, 1.0]}
                 style={{
                   height: 80,
@@ -363,6 +379,79 @@ const NewQueue = (props) => {
                 </Text>
               </LinearGradient>
 
+              <View
+                style={{
+                  display: type == "" ? "flex" : "none",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  width: "100%",
+                  height: 60,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    getData("1");
+                  }}
+                  style={[
+                    styles.sectionBox,
+                    { backgroundColor: colors.first, width: "20%" },
+                  ]}
+                >
+                  <Text
+                    style={{
+                      textAlign: "right",
+                      fontSize: 15,
+                      color: colors.text,
+                      fontWeight: "600",
+                    }}
+                  >
+                    ידיים
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    getData("2");
+                  }}
+                  style={[
+                    styles.sectionBox,
+                    { backgroundColor: colors.first, width: "auto" },
+                  ]}
+                >
+                  <Text
+                    style={{
+                      textAlign: "right",
+                      fontSize: 15,
+                      color: colors.text,
+                      fontWeight: "600",
+                    }}
+                  >
+                    ידיים+רגליים
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    getData("3");
+                  }}
+                  style={[
+                    styles.sectionBox,
+                    { backgroundColor: colors.first, width: "20%" },
+                  ]}
+                >
+                  <Text
+                    style={{
+                      textAlign: "right",
+                      fontSize: 15,
+                      color: colors.text,
+                      fontWeight: "600",
+                    }}
+                  >
+                    תיקון
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* sfdgsdfgkjsdhfgkjsdfglkjsdgf */}
               <View style={styles.FLcontainer}>
                 {selectedDate.getDay() != 5 && selectedDate.getDay() != 6 ? (
                   <View
@@ -371,51 +460,38 @@ const NewQueue = (props) => {
                       width: "100%",
                       flexDirection: "row",
                       flexWrap: "wrap",
-                      justifyContent: "center",
+                      justifyContent: "flex-start",
                       alignItems: "center",
                     }}
                   >
-                    {hours.map((item) => {
-                      if (catchH.includes(item.hour)) {
-                        item.color = "white";
-                        item.iscatched = true;
-                        return <></>;
-                      } else {
-                        item.color = "white";
-                        item.iscatched = false;
-                        return (
-                          <TouchableOpacity
-                            onPress={() => {
-                              if (item.iscatched) {
-                                console.log("catched " + item.hour);
-                              } else {
-                                setChoosenHour(item.hour);
-                                setMassage(!massage);
-                              }
-                            }}
-                            key={item.key}
+                    {availableHours.map((hour) => {
+                      return (
+                        <TouchableOpacity
+                          onPress={() => {
+                            setChoosenHour(hour);
+                            setMassage(!massage);
+                          }}
+                          key={hour.text}
+                        >
+                          <View
+                            style={[
+                              styles.sectionBox,
+                              { backgroundColor: "white" },
+                            ]}
+                            key={hour.text}
                           >
-                            <View
-                              style={[
-                                styles.sectionBox,
-                                { backgroundColor: "white" },
-                              ]}
-                              key={item.hour}
+                            <Text
+                              style={{
+                                textAlign: "right",
+                                fontSize: 15,
+                                color: colors.text,
+                              }}
                             >
-                              <Text
-                                style={{
-                                  textAlign: "right",
-                                  fontSize: 19,
-                                  color: colors.text,
-                                }}
-                              >
-                                {" "}
-                                {item.hour}:00
-                              </Text>
-                            </View>
-                          </TouchableOpacity>
-                        );
-                      }
+                              {hour.text}
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      );
                     })}
                   </View>
                 ) : (
@@ -449,8 +525,8 @@ const NewQueue = (props) => {
               style={styles.touchiArrow}
             >
               <LinearGradient
-                colors={[colors.second, colors.first, colors.first]}
-                locations={[0.0, 0.3, 1.0]}
+                colors={["#f2f2f2", "#f7f7f7", "#fcfcfc"]}
+                locations={[0.0, 0.8, 1.0]}
                 style={styles.linearGradient1}
               >
                 <FontAwesome name="arrow-down" size={30} color={colors.forth} />
@@ -463,11 +539,15 @@ const NewQueue = (props) => {
               style={styles.touchiArrowIOS}
             >
               <LinearGradient
-                colors={[colors.second, colors.first, colors.first]}
+                colors={["#f2f2f2", "#fcfcfc", "#fff"]}
                 locations={[0.0, 0.3, 1.0]}
                 style={styles.linearGradient1}
               >
-                <FontAwesome name="arrow-down" size={30} color={colors.second} />
+                <FontAwesome
+                  name="arrow-down"
+                  size={30}
+                  color={colors.second}
+                />
               </LinearGradient>
             </TouchableOpacity>
           )}

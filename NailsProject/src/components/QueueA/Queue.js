@@ -36,14 +36,39 @@ const Queue = ({
     }
   };
 
-  const AMPM = (hour, first) => {
-    let minute = "00";
-    if (!first) {
-      minute = item.type == "A" ? "00" : "30";
+  const hourAsType = (hour, type) => {
+    var hourToReurn = { text: "", type: "" };
+    switch (type) {
+      case "A":
+        hourToReurn.text = hour + ":00 - " + (hour + 1) + ":00";
+        hourToReurn.type = "A";
+        break;
+      case "B":
+        hourToReurn.text =
+          Math.floor(hour) + ":30 - " + (Math.floor(hour) + 1) + ":30";
+        hourToReurn.type = "B";
+      case "C":
+        hourToReurn.text = hour + ":00 - " + (hour + 1) + ":30";
+        hourToReurn.type = "C";
+        break;
+      case "D":
+        hourToReurn.text =
+          Math.floor(hour) + ":30 - " + (Math.floor(hour) + 2) + ":00";
+        hourToReurn.type = "D";
+        break;
+      case "E":
+        hourToReurn.text = hour + ":00 - " + hour + ":30";
+        hourToReurn.type = "E";
+        break;
+      case "F":
+        hourToReurn.text =
+          Math.floor(hour) + ":30 - " + (Math.floor(hour) + 1) + ":00";
+        hourToReurn.type = "F";
+        break;
+      default:
+        break;
     }
-    return parseInt(hour) < 13
-      ? hour + ":" + minute + "AM"
-      : hour + ":" + minute + "PM";
+    return hourToReurn;
   };
 
   const deleteQueue = async () => {
@@ -90,6 +115,32 @@ const Queue = ({
       });
   };
 
+  const AMPM = (hour, type ,gap) => {
+    var hourToReurn = { text: "", type: "" };
+    switch (type) {
+      case "A":
+        hourToReurn.text = hour + ":00 - " + (hour + gap) + ":00";
+        hourToReurn.type = "A";
+        break;
+      case "B":
+        hourToReurn.text =
+          hour + ":30 - " + (hour + gap) + ":30";
+        hourToReurn.type = "B";
+      case "C":
+        hourToReurn.text = hour + ":00 - " + (hour + gap) + ":30";
+        hourToReurn.type = "C";
+        break;
+      case "D":
+        hourToReurn.text =
+          hour + ":30 - " + (hour + gap) + ":00";
+        hourToReurn.type = "D";
+        break;
+      default:
+        break;
+    }
+    return hourToReurn;
+  };
+
   const showAlert = () => {
     setOpen(true);
   };
@@ -130,17 +181,7 @@ const Queue = ({
                 direction: "rtl",
               }}
             >
-              {AMPM(item.hour + 1, false)}
-            </Text>
-            <Text
-              style={{
-                textAlign: "center",
-                fontSize: 14,
-                color: "black",
-                direction: "rtl",
-              }}
-            >
-              {`${AMPM(item.hour, true)} - `}
+              {hourAsType(item.hour, item.type).text}
             </Text>
           </View>
 
@@ -284,23 +325,23 @@ const Queue = ({
       ) : (
         //////
         <Pressable
-        style={[{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          justifyContent: "flex-start",
-          backgroundColor: "white",
-          marginHorizontal: 3,
-          padding: 20,
-          gap: 10,
-          direction: 'rtl'
-        }, {height: 130 * item.gap}]}
-        onPress={() => console.log(item.hour)}
+          style={[
+            {
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+              backgroundColor: "white",
+              marginHorizontal: 3,
+              padding: 20,
+              gap: 10,
+              direction: "rtl",
+            },
+            { height: 130 * item.gap },
+          ]}
+          onPress={() => console.log(item.hour)}
         >
-          
-
-
-           <View
+          <View
             style={{
               display: "flex",
               flexDirection: "row",
@@ -317,17 +358,7 @@ const Queue = ({
                 direction: "rtl",
               }}
             >
-              {AMPM(item.hour + item.gap - 1, true)}
-            </Text>
-            <Text
-              style={{
-                textAlign: "center",
-                fontSize: 14,
-                color: "black",
-                direction: "rtl",
-              }}
-            >
-              {`${AMPM(item.hour, true)} - `}
+              {AMPM(item.hour, item.type, item.gap)}
             </Text>
           </View>
           {/* <View>

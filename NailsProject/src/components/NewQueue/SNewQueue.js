@@ -81,12 +81,12 @@ export const styles = StyleSheet.create({
     shadowRadius: 3.84,
     display: "flex",
     flexDirection: "column",
-    padding: 3,
-    width: 100,
+    padding: 10,
+    width: 'auto',
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "space-evenly",
-    height: 40,
+    height: 45,
     marginHorizontal: 9,
     marginVertical: 9,
     elevation: 4,
@@ -148,6 +148,7 @@ export const styles = StyleSheet.create({
     color: "#3f2949",
     fontSize: 16,
     marginTop: 10,
+    direction: 'rtl'
   },
   textStyle: {
     fontSize: 13,

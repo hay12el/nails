@@ -46,7 +46,9 @@ export const propertiesSlice = createSlice({
   initialState,
   reducers: {
     SETPROPERTIES: (state, action) => {
-      state = action.payload.properties;
+      state.aboutMe = action.payload.properties.aboutMe;
+      state.Linkim = action.payload.properties.links;
+      state.photos = action.payload.properties.photos;
     },
     SETPHOTOS: (state, action) => {
       state.photos = action.payload.photos;

@@ -15,6 +15,9 @@ export const getDayQueues = async (req: Request, res: Response) => {
       admin: req.query.admin,
       time: { $gte: Day, $lt: nextDay },
     });
+
+    const type = req.query.type;
+
     //@ts-ignore
     const hours = queues.map((x) => new Date(x.time));
     const hoursToReturn = hours.map((x: Date) => x.getUTCHours());
@@ -26,7 +29,8 @@ export const getDayQueues = async (req: Request, res: Response) => {
 };
 
 export const addNewQueue = async (req: Request, res: Response) => {
-  const { myAdmin, time, hour } = req.body;
+  const { myAdmin, time, hour, type } = req.body;
+
   const dateObj = new Date(time);
   const month = dateObj.getUTCMonth(); //months from 1-12
   const day = dateObj.getUTCDate();
@@ -41,7 +45,7 @@ export const addNewQueue = async (req: Request, res: Response) => {
       time: theTime,
       //@ts-ignore
       connectTo: req.userId,
-      type: "A",
+      type: type,
     });
 
     //save the new Event to database
@@ -64,13 +68,12 @@ export const getMyQueues = async (req: Request, res: Response) => {
     const today = new Date(moment().format());
 
     //@ts-ignore
-    const yesterday = today - 24 * 60 * 60 * 1000;
-    const yesterdayDate = new Date(yesterday);
+    const yesterday = today.setHours(0, 0, 0, 0);
     //@ts-ignore
     const myQueues = await User.findOne({ _id: req.userId });
     const queues = await Event.find({
       _id: { $in: myQueues?.queues },
-      time: { $gte: yesterdayDate },
+      time: { $gte: yesterday },
     });
     res.send(queues).status(200);
   } catch (err) {
@@ -143,6 +146,34 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
         //@ts-ignore
         queues[i + 1].time.getHours() - queues[i].time.getHours() > 1
       ) {
+        let objType;
+        if (
+          queues[i].type == "A" ||
+          queues[i].type == "D" ||
+          queues[i].type == "F"
+        ) {
+          if (
+            queues[i + 1].type == "A" ||
+            queues[i + 1].type == "D" ||
+            queues[i + 1].type == "F"
+          ) {
+            // start and end round hour
+            objType = "A";
+          } else {
+            objType = "B";
+          }
+        } else {
+          if (
+            queues[i + 1].type == "A" ||
+            queues[i + 1].type == "D" ||
+            queues[i + 1].type == "F"
+          ) {
+            objType = "C";
+          } else {
+            objType = "D";
+          }
+        }
+
         //@ts-ignore
         let newObjj = {
           user: {
@@ -155,7 +186,7 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
           postId: queues[i]._id,
           //@ts-ignore
           time: addHours(queues[i].time, 1),
-          type: "M",
+          type: objType,
           //@ts-ignore
           hour: queues[i].time.getHours() - 2,
           //@ts-ignore
@@ -198,13 +229,129 @@ export const AdminDeleteQueue = async (req: Request, res: Response) => {
   }
 };
 
+export const getAvailableHours = async (req: Request, res: Response) => {
+  //@ts-ignore
+  const Day = returnDate(req.query.date);
+  let nextDay = new Date(Day);
+  nextDay.setDate(Day.getDate() + 1);
+
+  const queues = await Event.find({
+    admin: req.query.admin,
+    time: { $gte: Day, $lt: nextDay },
+  }).select("time type");
+
+  const hours = queues.map((x) => {
+    //@ts-ignore
+    return { hour: new Date(x.time), type: x.type };
+  });
+  const hoursToReturn = hours.map((x) => {
+    return { hour: x.hour.getUTCHours(), type: x.type };
+  });
+
+  const type = req.query.type;
+
+  const gaps = getQueueGaps(hoursToReturn);
+
+  let availableHours = [];
+  switch (type) {
+    case "1":
+      availableHours = checkHours(gaps, "1");
+      break;
+    case "2":
+      availableHours = checkHours(gaps, "2");
+      break;
+    case "3":
+      availableHours = checkHours(gaps, "3");
+      break;
+    default:
+      break;
+  }
+
+  res.send({ events: availableHours }).status(200);
+};
+
+//@ts-ignore
+function getQueueGaps(sortedQueues) {
+  // Initialize an array to store the gaps
+  const gaps = [];
+
+  // Loop through the queues and calculate the gaps
+  for (let i = 0; i < sortedQueues.length - 1; i++) {
+    const currentQueue = sortedQueues[i];
+    const nextQueue = sortedQueues[i + 1];
+
+    // Calculate the gap between the current queue and the next queue
+    const gap =
+      nextQueue.hour +
+      (nextQueue.type === "F" ||
+      nextQueue.type === "D" ||
+      nextQueue.type === "B"
+        ? 0.5
+        : 0) -
+      (currentQueue.hour +
+        (currentQueue.type === "C" || currentQueue.type === "D" ? 1 : 0) +
+        (currentQueue.type === "E" ||
+        currentQueue.type === "F" ||
+        currentQueue.type === "B"
+          ? 0.5
+          : 0));
+
+    // Add the gap to the gaps array
+    if (gap > 1) {
+      gaps.push({
+        gap: gap - 1,
+        startFrom:
+          currentQueue.hour +
+          (currentQueue.type === "C" ||
+          currentQueue.type === "D" ||
+          currentQueue.type === "A" ||
+          currentQueue.type === "B"
+            ? 1
+            : 0) +
+          (currentQueue.type === "C" ||
+          currentQueue.type === "E" ||
+          currentQueue.type === "F" ||
+          currentQueue.type === "B"
+            ? 0.5
+            : 0),
+      });
+    }
+  }
+
+  return gaps;
+}
+
+//@ts-ignore
+const checkHours = (gaps, type) => {
+  const types = { "1": 1, "2": 1.5, "3": 0.5 };
+
+  let availableHours = [];
+  for (const gap of gaps) {
+    //@ts-ignore
+    if (gap.gap >= types[type]) {
+      let plusGap = gap.startFrom + gap.gap;
+      let tempHour = gap.startFrom;
+      while (tempHour <= plusGap) {
+        //@ts-ignore
+        if (tempHour + types[type] <= plusGap) {
+          availableHours.push(tempHour);
+        }
+        tempHour = tempHour + 0.5;
+      }
+    }
+  }
+  return availableHours;
+};
+
+//////
+
 //@ts-ignore
 const addHours = (date, hours) => {
   const newDate = new Date(date);
   newDate.setHours(date.getHours() + hours);
 
   return newDate;
-}
+};
 
 const returnDate = (date: string) => {
   const dateObj = new Date(date);

@@ -39,6 +39,13 @@ export const changePhotoText = async (req: Request, res: Response) => {
 
 export const changeAboutMe = async (req: Request, res: Response) => {
   try {
+    //@ts-ignore
+    const adminId = req.userId;
+    
+    
+    await AdminProperties.findOneAndUpdate({admin: adminId}, {aboutMe: req.body.aboutMe});
+
+    res.send("ok").status(200);
   } catch (error: any) {
     console.log(error.message);
     res.sendStatus(404);

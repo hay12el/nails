@@ -83,4 +83,10 @@ export const styles = StyleSheet.create({
   buttonOpen: {
     backgroundColor: "#FFf6f6",
   },
+  opacBtn: {
+    height: '100%',
+    display: 'flex',
+    justifyContent: "center",
+    alignItems: "center",
+  }
 });

@@ -1,10 +1,11 @@
 import {Router} from 'express';
-import {getDayQueues,addNewQueue,getMyQueues,deleteMyQueue,AdminGetDayQueues,AdminDeleteQueue} from '../controllers/eventController'
+import {getDayQueues,addNewQueue,getMyQueues,deleteMyQueue,AdminGetDayQueues,AdminDeleteQueue, getAvailableHours} from '../controllers/eventController'
 import { verifyToken } from '../middleware/verifyToken';
 
 const router = Router();
 
-router.get("/getDayQueues",  getDayQueues);
+// router.get("/getDayQueues",  getDayQueues);
+router.get("/getDayQueues",  getAvailableHours);
 
 router.post("/addNewQueue", verifyToken ,addNewQueue);
 
