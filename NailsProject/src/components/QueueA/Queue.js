@@ -47,6 +47,7 @@ const Queue = ({
         hourToReurn.text =
           Math.floor(hour) + ":30 - " + (Math.floor(hour) + 1) + ":30";
         hourToReurn.type = "B";
+        break;
       case "C":
         hourToReurn.text = hour + ":00 - " + (hour + 1) + ":30";
         hourToReurn.type = "C";
@@ -115,7 +116,8 @@ const Queue = ({
       });
   };
 
-  const AMPM = (hour, type ,gap) => {
+  const AMPM = (hour, type, gap) => {
+    console.log(hour, type, gap);
     var hourToReurn = { text: "", type: "" };
     switch (type) {
       case "A":
@@ -123,16 +125,15 @@ const Queue = ({
         hourToReurn.type = "A";
         break;
       case "B":
-        hourToReurn.text =
-          hour + ":30 - " + (hour + gap) + ":30";
+        hourToReurn.text = hour + ":30 - " + (hour + gap) + ":30";
         hourToReurn.type = "B";
+        break;
       case "C":
-        hourToReurn.text = hour + ":00 - " + (hour + gap) + ":30";
+        hourToReurn.text = hour + ":30 - " + (hour + gap) + ":00";
         hourToReurn.type = "C";
         break;
       case "D":
-        hourToReurn.text =
-          hour + ":30 - " + (hour + gap) + ":00";
+        hourToReurn.text = hour + ":30 - " + (hour + gap - 1) + ":00";
         hourToReurn.type = "D";
         break;
       default:
@@ -358,21 +359,9 @@ const Queue = ({
                 direction: "rtl",
               }}
             >
-              {AMPM(item.hour, item.type, item.gap)}
+              {AMPM(item.hour, item.type, item.gap).text}
             </Text>
           </View>
-          {/* <View>
-            <Pressable
-              style={[styles.button, styles.buttonOpen]}
-              onPress={() => catchQueue()}
-            >
-              <Text
-                style={{ fontSize: 14, color: colors.text, fontWeight: "600" }}
-              >
-                ביטול התור
-              </Text>
-            </Pressable>
-          </View> */}
         </Pressable>
       )}
       <Message

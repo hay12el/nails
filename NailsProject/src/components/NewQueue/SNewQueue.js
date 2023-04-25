@@ -23,10 +23,8 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   FLcontainer: {
-    flex: 1,
+    display: 'flex',
     width: "100%",
-    backgroundColor: "white",
-    paddingBottom: 1,
     marginTop: 15,
   },
   touchi: {

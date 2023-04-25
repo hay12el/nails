@@ -88,25 +88,40 @@ export default function MyQueues({ navigation }) {
         </LinearGradient>
       )}
 
-      <View style={{ height: "100%", backgroundColor: "white", paddingBottom: 50, width:'100%' }}>
+      <View
+        style={{
+          height: "100%",
+          backgroundColor: "white",
+          paddingBottom: 50,
+          width: "100%",
+        }}
+      >
         {Object.keys(queues).length === 0 ? (
-          <View style={{display:'flex', alignItems: 'center', justifyContent: 'center',  width:'100%'}}>
-          {/* <View style={{ marginTop: "50%" }}> */}
+          <View
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+            }}
+          >
             <Text style={{ textAlign: "center", fontSize: 30 }}>
               אין תורים עתידיים
             </Text>
           </View>
         ) : (
-          <FlatList
-            style={{ paddingTop: 10 }}
-            data={queues}
-            renderItem={({ item }) => (
-              <MyQueuesQ item={item} setQueues={setQueues} />
-            )}
-            keyExtractor={(item) => item._id}
-          />
+          <View  style={{ paddingBottom: 30, height: '80%',paddingTop: 10 }}>
+            <FlatList
+              data={queues}
+              renderItem={({ item }) => (
+                <MyQueuesQ item={item} setQueues={setQueues} />
+              )}
+              keyExtractor={(item) => item._id}
+            />
+          </View>
         )}
       </View>
+      <NavBar rreload={rreload} />
 
       <ActivityIndicator
         style={styles.loading}
@@ -115,7 +130,6 @@ export default function MyQueues({ navigation }) {
         animating={thinking}
       />
 
-      <NavBar rreload={rreload} />
     </View>
   );
 }

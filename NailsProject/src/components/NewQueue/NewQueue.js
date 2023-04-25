@@ -114,7 +114,7 @@ const NewQueue = (props) => {
     setSelectedDate(a);
   };
 
-const hourAsType = (hour, type) => {
+  const hourAsType = (hour, type) => {
     var hourToReurn = { text: "", type: "" };
     switch (type) {
       case "1":
@@ -152,15 +152,15 @@ const hourAsType = (hour, type) => {
         break;
     }
     return hourToReurn;
-};
-
+  };
+  
   useEffect(() => {
     setType("");
     setAvailableHours([]);
   }, [selectedDate, indicator]);
 
   const getData = async (type) => {
-    setType(type)
+    setType(type);
     let x = selectedDate;
     if (x.getDay() == 6 || x.getDay() == 5) {
       setThinking(false);
@@ -176,6 +176,7 @@ const hourAsType = (hour, type) => {
           );
         })
         .catch((err) => {
+          setThinking(false);
           console.log(err);
         });
     }
@@ -206,7 +207,6 @@ const hourAsType = (hour, type) => {
         alignContent: "center",
       }}
     >
-      {/*Platform.OS === "android" ? (*/}
       <TouchableOpacity
         activeOpacity={0.1}
         onPress={() => visi()}
@@ -330,7 +330,7 @@ const hourAsType = (hour, type) => {
               </View>
             </Modal>
 
-            <ScrollView style={{ width: "100%" }}>
+            <View style={{ width: "100%" }}>
               <CalendarStrip
                 style={{ height: 130, paddingTop: 20, paddingBottom: 10 }}
                 selectedDate={new Date()}
@@ -395,7 +395,7 @@ const hourAsType = (hour, type) => {
                   }}
                   style={[
                     styles.sectionBox,
-                    { backgroundColor: colors.first, width: "20%" },
+                    { backgroundColor: "white", width: "20%" },
                   ]}
                 >
                   <Text
@@ -415,7 +415,7 @@ const hourAsType = (hour, type) => {
                   }}
                   style={[
                     styles.sectionBox,
-                    { backgroundColor: colors.first, width: "auto" },
+                    { backgroundColor: "white", width: "20%", minWidth: 120},
                   ]}
                 >
                   <Text
@@ -435,7 +435,7 @@ const hourAsType = (hour, type) => {
                   }}
                   style={[
                     styles.sectionBox,
-                    { backgroundColor: colors.first, width: "20%" },
+                    { backgroundColor: "white", width: "20%" },
                   ]}
                 >
                   <Text
@@ -451,48 +451,57 @@ const hourAsType = (hour, type) => {
                 </TouchableOpacity>
               </View>
 
-              {/* sfdgsdfgkjsdhfgkjsdfglkjsdgf */}
               <View style={styles.FLcontainer}>
                 {selectedDate.getDay() != 5 && selectedDate.getDay() != 6 ? (
                   <View
                     style={{
                       display: "flex",
                       width: "100%",
-                      flexDirection: "row",
-                      flexWrap: "wrap",
+                      height: '59%',
                       justifyContent: "flex-start",
-                      alignItems: "center",
+                      alignItems: "center",marginBottom: 140,
                     }}
                   >
-                    {availableHours.map((hour) => {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => {
-                            setChoosenHour(hour);
-                            setMassage(!massage);
-                          }}
-                          key={hour.text}
-                        >
-                          <View
-                            style={[
-                              styles.sectionBox,
-                              { backgroundColor: "white" },
-                            ]}
-                            key={hour.text}
-                          >
-                            <Text
-                              style={{
-                                textAlign: "right",
-                                fontSize: 15,
-                                color: colors.text,
+                    <ScrollView contentContainerStyle={{
+                          display: "flex",
+                          width: "100%",
+                          flexDirection: "row",
+                          flexWrap: "wrap",
+                          justifyContent: "flex-start",
+                          alignItems: "center",
+                          backgroundColor: "green",
+                          marginBottom:160
+                        }}>
+                        {availableHours.map((hour) => {
+                          return (
+                            <TouchableOpacity
+                              onPress={() => {
+                                setChoosenHour(hour);
+                                setMassage(!massage);
                               }}
+                              key={hour.text}
                             >
-                              {hour.text}
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      );
-                    })}
+                              <View
+                                style={[
+                                  styles.sectionBox,
+                                  { backgroundColor: "white" },
+                                ]}
+                                key={hour.text}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "right",
+                                    fontSize: 15,
+                                    color: colors.text,
+                                  }}
+                                >
+                                  {hour.text}
+                                </Text>
+                              </View>
+                            </TouchableOpacity>
+                          );
+                        })}
+                    </ScrollView>
                   </View>
                 ) : (
                   <View
@@ -508,7 +517,7 @@ const hourAsType = (hour, type) => {
                   </View>
                 )}
               </View>
-            </ScrollView>
+            </View>
           </View>
 
           <ActivityIndicator

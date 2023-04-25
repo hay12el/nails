@@ -20,12 +20,47 @@ const days = {
 
 const MyQueuesQ = (props) => {
   const [delete1, setDelete] = useState(false);
-  // const { user } = useContext(UserContext);
   const user = useSelector((state) => state.user);
   const item = props.item;
   const setQueues = props.setQueues;
 
   let theTime = new Date(item.time);
+  const hourAsType = (hour, type) => {
+    console.log(hour, type);
+    var hourToReurn = { text: "", type: "" };
+    switch (type) {
+      case "A":
+        hourToReurn.text = (hour + 1) + ":00 - " +  hour + ":00";
+        hourToReurn.type = "A";
+        break;
+      case "B":
+        hourToReurn.text =
+           (Math.floor(hour) + 1) + ":30 - " + Math.floor(hour) + ":30";
+        hourToReurn.type = "B";
+        break;
+      case "C":
+        hourToReurn.text = (hour + 1) + ":30 - " + hour + ":00";
+        hourToReurn.type = "C";
+        break;
+      case "D":
+        hourToReurn.text =
+           (Math.floor(hour) + 2) + ":00 - " + Math.floor(hour) + ":30";
+        hourToReurn.type = "D";
+        break;
+      case "E":
+        hourToReurn.text = hour + ":30 - " + hour + ":00";
+        hourToReurn.type = "E";
+        break;
+      case "F":
+        hourToReurn.text =
+         (Math.floor(hour) + 1) + ":00 - " + Math.floor(hour) + ":30";
+        hourToReurn.type = "F";
+        break;
+      default:
+        break;
+    }
+    return hourToReurn;
+  };
 
   const deleteQueue = async (id) => {
     API.post("/event/deleteMyQueue", { token: user.token, queueId: id })
@@ -93,7 +128,7 @@ const MyQueuesQ = (props) => {
         </Text>
         <Text> </Text>
         <Text style={{ textAlign: "right", fontSize: 16 }}>
-          בשעה {theTime.getUTCHours()}:00
+          בשעות {(hourAsType(theTime.getUTCHours(), props.item.type)).text}
         </Text>
       </View>
 

@@ -30,20 +30,6 @@ export default function Admin_pannel({ navigation }) {
   const [Success, setSuccess] = useState(false);
   const [catchH, setCatchH] = useState([]);
   const [choousenHour, setChoosenHour] = useState(0);
-  const [hours, setHours] = useState([
-    { hour: 9, key: "1", iscatched: false, user: {} },
-    { hour: 10, key: "2", iscatched: false, user: {} },
-    { hour: 11, key: "3", iscatched: false, user: {} },
-    { hour: 12, key: "4", iscatched: false, user: {} },
-    { hour: 13, key: "11", iscatched: false, user: {} },
-    { hour: 14, key: "12", iscatched: false, user: {} },
-    { hour: 15, key: "5", iscatched: false, user: {} },
-    { hour: 16, key: "6", iscatched: false, user: {} },
-    { hour: 17, key: "7", iscatched: false, user: {} },
-    { hour: 18, key: "8", iscatched: false, user: {} },
-    { hour: 19, key: "9", iscatched: false, user: {} },
-    { hour: 20, key: "10", iscatched: false, user: {} },
-  ]);
 
   LocaleConfig.locales["he"] = {
     monthNames: [
@@ -95,8 +81,7 @@ export default function Admin_pannel({ navigation }) {
 
   LocaleConfig.defaultLocale = "he";
 
-  const [items, setItems] = useState({
-  });
+  const [items, setItems] = useState({});
 
   const onDateChange = (date) => {
     const a = new Date(date.dateString);
@@ -148,6 +133,7 @@ export default function Admin_pannel({ navigation }) {
           setThinking(false);
         })
         .catch((err) => {
+          setThinking(false);
           console.log(err);
         });
     };
