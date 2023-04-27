@@ -1,10 +1,19 @@
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from "react-native";
+import React, { useRef, useState } from "react";
 import { styles } from "./SAdminEditor";
 import { useSelector, useDispatch } from "react-redux";
 import photos from "../../utils/photos";
 import colors from "../../styles/colors";
 import * as ImagePicker from "expo-image-picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import ScrollPicker from "react-native-wheel-scrollview-picker";
 import {
   FontAwesome,
   //@ts-ignore
@@ -18,11 +27,20 @@ const AdminEditor = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [text, onChangeText] = useState("");
+  const [hoursLimitation, setHoursLimitation] = useState({
+    date: "1/1/2020",
+    from: 0,
+    to: 0,
+  });
+  const [showDate, setShowDate] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [thinking, setThinking] = useState(false);
 
   /////////// To Change!!!!!
   const [images, setImage] = useState([]);
   const [imageForOverlay, setimageForOverlay] = useState(null);
   const [open, setOpen] = useState(false);
+  const [openPicker, setopenPicker] = useState({ open: false, kind: "to" });
   const pickImage = async () => {
     try {
       // No permissions request is necessary for launching the image library
@@ -36,17 +54,49 @@ const AdminEditor = () => {
     } catch (err) {}
   };
 
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setHoursLimitation({
+      ...hoursLimitation,
+      date: currentDate.toLocaleDateString(),
+    });
+    if (Platform.OS === "android") setShowDate(false);
+    setDob(currentDate);
+  };
+
   const handleTextChange = async (text) => {
     try {
       API.post("/properties/changeAboutMe", {
         token: user.token,
         aboutMe: text,
-      }).then(response => {
+      }).then((response) => {
         dispatch(SETABOUTME({ aboutMe: text }));
-      })
+      });
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const updateHours = async () => {
+    setThinking(true);
+    API.post("/event/addNewQueue", {
+      token: user.token,
+      time: hoursLimitation.date,
+      hour: hoursLimitation.from,
+      to: hoursLimitation.to,
+      type: "G",
+    })
+      .then(async (response) => {
+        if (!(typeof response.data == "string")) {
+          setThinking(false);
+        } else {
+          setThinking(false);
+        }
+      })
+      .catch((err) => {
+        setThinking(false);
+        console.log(err);
+      });
   };
 
   ////////////
@@ -58,6 +108,71 @@ const AdminEditor = () => {
 
   return (
     <View style={styles.adminContainer}>
+      
+      <Overlay isVisible={openPicker.open}>
+        <View
+          style={{
+            height: 200,
+            display: "flex",
+            width: 180,
+          }}
+        >
+          <ScrollPicker
+            dataSource={[
+              "8:00",
+              "9:00",
+              "10:00",
+              "11:00",
+              "12:00",
+              "13:00",
+              "14:00",
+              "15:00",
+              "16:00",
+              "17:00",
+              "18:00",
+              "19:00",
+              "20:00",
+            ]}
+            selectedIndex={1}
+            renderItem={(data, index) => {
+              return (
+                <View>
+                  <Text>{data}</Text>
+                </View>
+              );
+            }}
+            onValueChange={(data, selectedIndex) => {
+              if (openPicker.kind == "from") {
+                setHoursLimitation({
+                  ...hoursLimitation,
+                  from: data.split(":")[0],
+                });
+              } else {
+                setHoursLimitation({
+                  ...hoursLimitation,
+                  to: data.split(":")[0],
+                });
+              }
+            }}
+            wrapperHeight={180}
+            wrapperWidth={150}
+            wrapperColor="#FFFFFF"
+            itemHeight={60}
+            highlightColor="#d8d8d8"
+            highlightBorderWidth={2}
+          />
+          <TouchableOpacity
+            style={[styles.btn, { marginTop: 10 }]}
+            onPress={() => setopenPicker({ ...openPicker, open: false })}
+          >
+            <Text
+              style={{ fontSize: 14, fontWeight: "600", color: colors.text }}
+            >
+              בחירת שעה
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Overlay>
       <Text style={{ fontSize: 19, color: colors.text }}>
         היי {user.username} 😊
       </Text>
@@ -291,6 +406,182 @@ const AdminEditor = () => {
             </Text>
             <FontAwesome name="upload" size={20} color={colors.text} />
           </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.aboutMeSection}>
+      <ActivityIndicator
+        style={styles.loading}
+        size="large"
+        color={colors.forth}
+        animating={thinking}
+      />
+        <Text
+          style={{
+            textAlign: "left",
+            fontSize: 16,
+            fontWeight: "700",
+            color: colors.text,
+          }}
+        >
+          שינוי שדה "קצת עליי":
+        </Text>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 40,
+            marginVertical: 20,
+            width: "100%",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+          }}
+        >
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-around",
+              width: "100%",
+            }}
+          >
+            <>
+              <Text
+                style={{
+                  textAlign: "right",
+                  fontSize: 16,
+                  fontWeight: "700",
+                  color: colors.text,
+                }}
+              >
+                יום:
+              </Text>
+            </>
+            <></>
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={() => setShowDate(true)}
+            >
+              <Text
+                style={{
+                  textAlign: "left",
+                  fontSize: 16,
+                  color: colors.text,
+                }}
+              >
+                <Text>{hoursLimitation.date}</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-around",
+              width: "100%",
+            }}
+          >
+            <>
+              <Text
+                style={{
+                  textAlign: "left",
+                  fontSize: 16,
+                  fontWeight: "700",
+                  color: colors.text,
+                }}
+              >
+                מהשעה:
+              </Text>
+            </>
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={() => setopenPicker({ open: true, kind: "from" })}
+            >
+              <Text
+                style={{
+                  textAlign: "left",
+                  fontSize: 16,
+                  color: colors.text,
+                }}
+              >
+                {hoursLimitation.from}:00
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-around",
+              width: "100%",
+            }}
+          >
+            <Text
+              style={{
+                textAlign: "left",
+                fontSize: 16,
+                fontWeight: "700",
+                color: colors.text,
+              }}
+            >
+              עד השעה:
+            </Text>
+
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={() => setopenPicker({ open: true, kind: "to" })}
+            >
+              <Text
+                style={{
+                  textAlign: "left",
+                  fontSize: 16,
+                  color: colors.text,
+                }}
+              >
+                {hoursLimitation.to}:00
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
+          {showDate && (
+            <DateTimePicker
+              locale="he-HE"
+              style={{ width: "100%" }}
+              testID="dateTimePicker"
+              value={date}
+              mode="date"
+              display="default"
+              onChange={onChange}
+            />
+          )}
+          <View
+            style={{ width: "100%", display: "flex", alignItems: "center" }}
+          >
+            <TouchableOpacity
+              style={[
+                styles.btn,
+                { width: "80%", backgroundColor: colors.forth },
+              ]}
+              onPress={() => updateHours()}
+            >
+              <Text
+                style={{ fontSize: 14, fontWeight: "600", color: colors.text }}
+              >
+                עדכון שעות פעילות
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>

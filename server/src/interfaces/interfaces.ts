@@ -21,6 +21,7 @@ export interface IEvent {
   admin: String;
   time: Date;
   type: String;
+  to: String;
   connectTo: {
     type: Types.ObjectId;
     ref: "User";

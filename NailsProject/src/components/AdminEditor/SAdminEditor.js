@@ -2,6 +2,15 @@ import { StyleSheet } from "react-native";
 import colors from "../../styles/colors";
 
 export const styles = StyleSheet.create({
+  loading: {
+    position: "absolute",
+    height: 30,
+    width: 78,
+    left: "40%",
+    top: "50%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   adminContainer: {
     backgroundColor: colors.first,
     width: "100%",

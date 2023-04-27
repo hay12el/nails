@@ -469,7 +469,6 @@ const NewQueue = (props) => {
                           flexWrap: "wrap",
                           justifyContent: "flex-start",
                           alignItems: "center",
-                          backgroundColor: "green",
                           marginBottom:160
                         }}>
                         {availableHours.map((hour) => {

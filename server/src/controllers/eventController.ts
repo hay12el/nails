@@ -29,9 +29,25 @@ export const getDayQueues = async (req: Request, res: Response) => {
 };
 
 export const addNewQueue = async (req: Request, res: Response) => {
-  const { myAdmin, time, hour, type } = req.body;
+  let { myAdmin, time, hour, type, to } = req.body;
 
-  const dateObj = new Date(time).setUTCHours(hour);
+  var dateObj;
+  if (type == "M") {
+    let strD = time.split(".");
+
+    const TheTime =
+      strD[2] +
+      "-" +
+      (strD[1] < 10 ? 0 + strD[1] : strD[1]) +
+      "-" +
+      (strD[0] < 10 ? 0 + strD[0] : strD[0]) +
+      "T09:00:00.000Z";
+    dateObj = new Date(TheTime).setUTCHours(hour);
+    //@ts-ignore
+    myAdmin = req.userId;
+  } else {
+    dateObj = new Date(time).setUTCHours(hour);
+  }
 
   try {
     //make new Event
@@ -40,6 +56,7 @@ export const addNewQueue = async (req: Request, res: Response) => {
       time: new Date(dateObj),
       //@ts-ignore
       connectTo: req.userId,
+      to: to,
       type: type,
     });
 
@@ -54,6 +71,9 @@ export const addNewQueue = async (req: Request, res: Response) => {
 
     res.send(afterUpdate?.queues).status(200);
   } catch (err) {
+    //@ts-ignore
+    console.log(err.message);
+
     res.sendStatus(404);
   }
 };
@@ -187,10 +207,12 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
           //@ts-ignore
           gap: calcGapForAdmin(
             {
+              //@ts-ignore
               hour: queues[i].time.getHours(),
               type: queues[i].type,
             },
             {
+              //@ts-ignore
               hour: queues[i + 1].time.getHours(),
               type: queues[i + 1].type,
             }
@@ -249,23 +271,36 @@ export const getAvailableHours = async (req: Request, res: Response) => {
   const queues = await Event.find({
     admin: req.query.admin,
     time: { $gte: Day, $lt: nextDay },
-  }).select("time type");
+  }).select("time type to");
 
   const hours = queues.map((x) => {
     //@ts-ignore
-    return { hour: new Date(x.time).getUTCHours(), type: x.type };
+    return { hour: new Date(x.time).getUTCHours(), type: x.type, to: x.to };
   });
-  hours.push({ hour: new Date(Day.setHours(12)).getUTCHours(), type: "M" });
-  hours.push({ hour: new Date(Day.setHours(22)).getUTCHours(), type: "M" });
 
-  hours.sort((a, b) => {
+  if (!hours.some((e) => e.type == "G")) {
+    //@ts-ignore
+    hours.push({ hour: new Date(Day.setHours(12)).getUTCHours(), type: "M" });
+    //@ts-ignore
+    hours.push({ hour: new Date(Day.setHours(22)).getUTCHours(), type: "M" });
+  } else {
+    const limit = hours.find((e) => e.type == "G");
+    //@ts-ignore
+    hours.push({ hour: limit?.hour, type: "M" });
+    //@ts-ignore
+    hours.push({ hour: Number(limit?.to), type: "M" });
+  }
+
+  const ho = hours.filter((x) => x.type != "G");
+
+  ho.sort((a, b) => {
     //@ts-ignore
     return a.hour - b.hour;
   });
 
   const type = req.query.type;
 
-  const gaps = getQueueGaps(hours);
+  const gaps = getQueueGaps(ho);
 
   let availableHours = [];
   switch (type) {
@@ -298,9 +333,6 @@ function getQueueGaps(sortedQueues) {
     let gap = 0;
     // Calculate the gap between the current queue and the next queue
     if (currentQueue.type == "M") {
-      console.log(currentQueue.hour);
-      console.log(nextQueue.hour);
-
       gap =
         1 +
         nextQueue.hour +
@@ -311,9 +343,6 @@ function getQueueGaps(sortedQueues) {
           : 0) -
         currentQueue.hour;
     } else if (nextQueue.type == "M") {
-      console.log(currentQueue.hour);
-      console.log(nextQueue.hour);
-
       gap =
         nextQueue.hour -
         (currentQueue.hour +
@@ -324,9 +353,6 @@ function getQueueGaps(sortedQueues) {
             ? 0.5
             : 0));
     } else {
-      console.log(currentQueue.hour);
-      console.log(nextQueue.hour);
-
       gap =
         nextQueue.hour +
         (nextQueue.type === "F" ||
@@ -379,13 +405,11 @@ const gapType = (hour, type) => {
   }
 };
 
+//@ts-ignore
 const calcGapForAdmin = (currentQueue, nextQueue) => {
   let gap = 0;
   // Calculate the gap between the current queue and the next queue
   if (currentQueue.type == "M") {
-    console.log(currentQueue.hour);
-    console.log(nextQueue.hour);
-
     gap =
       1 +
       nextQueue.hour +
@@ -396,7 +420,7 @@ const calcGapForAdmin = (currentQueue, nextQueue) => {
         : 0) -
       currentQueue.hour;
   } else if (nextQueue.type == "M") {
-    console.log("nextQueue",currentQueue.hour);
+    console.log("nextQueue", currentQueue.hour);
     console.log(nextQueue.hour);
 
     gap =
