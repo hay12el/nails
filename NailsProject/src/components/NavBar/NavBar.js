@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Linking } from "react-native";
+import { View, TouchableOpacity, Linking, Text } from "react-native";
 import React, { useState } from "react";
 import { styles } from "./SNavBar";
 import Color from "../../styles/colors";
@@ -48,6 +48,11 @@ const NavBar = (props) => {
         open={massage}
         onClose={() => setMassage(false)}
       />
+      {!user.isAdmin && (
+        <View style={styles.overover}>
+          <NewQueue rreload={rreload} />
+        </View>
+      )}
 
       <View style={{ display: "flex", alignItems: "center" }}>
         <LinearGradient
@@ -60,7 +65,7 @@ const NavBar = (props) => {
               style={styles.opacBtn}
               onPress={() => navigation.navigate("HomePage")}
             >
-              <Ionicons name="home-outline" size={25} color={colors.text} />
+              <Ionicons name="home-outline" size={27} color={colors.text} />
             </TouchableOpacity>
           </View>
           {user.isAdmin ? (
@@ -84,24 +89,27 @@ const NavBar = (props) => {
                 onPress={() => navigation.navigate("MyQueues")}
                 style={[styles.opacBtn, { marginRight: 10 }]}
               >
-                <FontAwesome name="calendar" size={22} color={colors.text} />
+                <FontAwesome name="calendar" size={25} color={colors.text} />
               </TouchableOpacity>
-
+              {/* 
               <View>
                 <NewQueue rreload={rreload} />
-              </View>
+              </View> */}
 
               <TouchableOpacity
                 onPress={() => Linking.openURL(links.wase)}
                 style={styles.opacBtn}
               >
-                <FontAwesome5 name="waze" size={25} color={colors.text} />
+                <FontAwesome5 name="waze" size={27} color={colors.text} />
               </TouchableOpacity>
             </>
           )}
 
-          <TouchableOpacity onPress={() => setMassage(true)}  style={styles.opacBtn}>
-            <Entypo name="log-out" size={22} color={colors.text} />
+          <TouchableOpacity
+            onPress={() => setMassage(true)}
+            style={styles.opacBtn}
+          >
+            <Entypo name="log-out" size={25} color={colors.text} />
           </TouchableOpacity>
         </LinearGradient>
       </View>

@@ -75,7 +75,6 @@ const Header = ({scrollA}) => {
   // };
   return (
     <Animated.View style={styles.HeaderContainer}>
-      {Platform.OS === "android" ? (
         <LinearGradient
           colors={[colors.first, colors.first, colors.second]}
           locations={[0.0, 0.7, 1.0]}
@@ -86,18 +85,6 @@ const Header = ({scrollA}) => {
             style={{ height: 180, width: 180 }}
           ></Image>
         </LinearGradient>
-      ) : (
-        <LinearGradient
-          colors={[colors.first, colors.first, colors.second]}
-          locations={[0.0, 0.7, 1.0]}
-          style={styles.linearGradientIOS}
-        >
-          <Image
-            source={require("../../../assets/11.png")}
-            style={{ height: 180, width: 180 }}
-          ></Image>
-        </LinearGradient>
-      )}
     </Animated.View>
   );
 };

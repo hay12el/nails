@@ -1,4 +1,4 @@
-import { View, ScrollView, Animated } from "react-native";
+import { View, ScrollView, Animated, ActivityIndicator } from "react-native";
 import React, { useRef } from "react";
 import { styles } from "../HomePage/SHomePage";
 import { StatusBar } from "expo-status-bar";

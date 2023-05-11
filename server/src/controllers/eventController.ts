@@ -89,7 +89,7 @@ export const getMyQueues = async (req: Request, res: Response) => {
     const queues = await Event.find({
       _id: { $in: myQueues?.queues },
       time: { $gte: yesterday },
-    });
+    }).sort("time");
     res.send(queues).status(200);
   } catch (err) {
     res.sendStatus(404);
@@ -119,7 +119,6 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
   try {
     //@ts-ignore
     const timeAsString = req.query.date.split("T")[0];
-
     //@ts-ignore
     const Day = returnDate(req.query.date);
     let nextDay = new Date(Day);
@@ -135,62 +134,103 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
       "username phone email isAdmin"
     );
 
+    // Add limit hours of the day
+    if (!queues.some((e) => e.type == "G")) {
+      //@ts-ignore
+      queues.push({ time: new Date(Day.setHours(12)), type: "M" });
+      //@ts-ignore
+      queues.push({ time: new Date(Day.setHours(22)), type: "M" });
+    } else {
+      // the admin added an hour limitation to the current day
+      const limit = queues.find((e) => e.type == "G");
+      queues.push({
+        //@ts-ignore
+        time: new Date(Day.setHours(limit?.time.getHours())),
+        type: "M",
+      });
+      queues.push({
+        //@ts-ignore
+        time: new Date(Day.setHours(limit?.to + 3)),
+        type: "M",
+      });
+    }
+
+    //Remove Linit Hours
+    const ho = queues.filter((x) => x.type != "G");
+
+    //Sort By Hours
+    ho.sort((a, b) => {
+      //@ts-ignore
+      return a.time - b.time;
+    });
+    if (ho[1].type == "M") {
+      let temp = ho[1];
+      ho[1] = ho[0];
+      ho[0] = temp;
+    }
+    // console.log(ho);
+
     const objectToReturn = {};
     let LST = [];
-    for (let i = 0; i < queues.length; i++) {
-      let user = users.find(
-        (us) => us._id.toString() == queues[i].connectTo.toString()
-      );
-      let newObj = {
-        user: {
-          userId: user?._id,
-          username: user?.username,
-          email: user?.email,
-          phone: user?.phone,
-          isAdmin: user?.isAdmin,
+    //Go through all the queues
+    for (let i = 0; i < ho.length - 1; i++) {
+      // if this is the upper limit "queue"
+      if (ho[i].type == "M" && calcGapForAdmin(
+        {
+          //@ts-ignore
+          hour: ho[i].time.getHours(),
+          type: ho[i].type,
         },
-        postId: queues[i]._id,
-        time: queues[i].time,
-        type: queues[i].type,
-        //@ts-ignore
-        hour: queues[i].time.getHours() - 3,
-        iscatched: true,
-      };
-      if (
-        i < queues.length - 1 &&
-        //@ts-ignore
-        queues[i + 1].time.getHours() - queues[i].time.getHours() > 1
-      ) {
+        {
+          //@ts-ignore
+          hour: ho[i + 1].time.getHours(),
+          type: ho[i + 1].type,
+        }
+      ) >= 1) {
         let objType;
         if (
-          queues[i].type == "A" ||
-          queues[i].type == "D" ||
-          queues[i].type == "F"
+          ho[i + 1].type == "A" ||
+          ho[i + 1].type == "C" ||
+          ho[i + 1].type == "E"
         ) {
-          if (
-            queues[i + 1].type == "A" ||
-            queues[i + 1].type == "C" ||
-            queues[i + 1].type == "E"
-          ) {
-            // start and end round hour
-            objType = "A";
-          } else {
-            objType = "B";
-          }
+          // start and end round hour
+          objType = "A";
         } else {
-          if (
-            queues[i + 1].type == "A" ||
-            queues[i + 1].type == "C" ||
-            queues[i + 1].type == "E"
-          ) {
-            objType = "C";
-          } else {
-            objType = "D";
-          }
+          objType = "B";
         }
 
         //@ts-ignore
-        let newObjj = {
+        let newObj = {
+          //@ts-ignore
+          time: ho[i].time,
+          type: objType,
+          //@ts-ignore
+          hour: ho[i].time.getHours() - 3,
+          //@ts-ignore
+          gap: calcGapForAdmin(
+            {
+              //@ts-ignore
+              hour: ho[i].time.getHours(),
+              type: ho[i].type,
+            },
+            {
+              //@ts-ignore
+              hour: ho[i + 1].time.getHours(),
+              type: ho[i + 1].type,
+            }
+          ),
+          iscatched: false,
+        };
+        // console.log(newObj);
+        
+        LST.push(newObj);
+      } else if(ho[i].type != "M") {
+        //find the user associated with that queue
+        let user = users.find(
+          (us) => us._id.toString() == ho[i].connectTo.toString()
+        );
+
+        let newObj = {
           user: {
             userId: user?._id,
             username: user?.username,
@@ -198,42 +238,95 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
             phone: user?.phone,
             isAdmin: user?.isAdmin,
           },
-          postId: queues[i]._id,
+          postId: ho[i]._id,
+          time: ho[i].time,
+          type: ho[i].type,
           //@ts-ignore
-          time: addHours(queues[i].time, 1),
-          type: objType,
+          hour: ho[i].time.getHours() - 3,
+          iscatched: true,
+        };
+        if (
+          i < ho.length - 1 &&
           //@ts-ignore
-          hour: gapType(queues[i].time.getHours() - 3, queues[i].type),
-          //@ts-ignore
-          gap: calcGapForAdmin(
+          calcGapForAdmin(
             {
               //@ts-ignore
-              hour: queues[i].time.getHours(),
-              type: queues[i].type,
+              hour: ho[i].time.getHours(),
+              type: ho[i].type,
             },
             {
               //@ts-ignore
-              hour: queues[i + 1].time.getHours(),
-              type: queues[i + 1].type,
+              hour: ho[i + 1].time.getHours(),
+              type: ho[i + 1].type,
             }
-          ),
-          iscatched: false,
-        };
-        ///
+          ) >= 1
+        ) {
+          let objType;
+          if (ho[i].type == "A" || ho[i].type == "D" || ho[i].type == "F") {
+            if (
+              ho[i + 1].type == "A" ||
+              ho[i + 1].type == "C" ||
+              ho[i + 1].type == "E"
+            ) {
+              // start and end round hour
+              objType = "A";
+            } else {
+              objType = "B";
+            }
+          } else {
+            if (
+              ho[i + 1].type == "A" ||
+              ho[i + 1].type == "C" ||
+              ho[i + 1].type == "E"
+            ) {
+              objType = "C";
+            } else {
+              objType = "D";
+            }
+          }
+          //@ts-ignore
+          let newObjj = {
+            user: {
+              userId: user?._id,
+              username: user?.username,
+              email: user?.email,
+              phone: user?.phone,
+              isAdmin: user?.isAdmin,
+            },
+            postId: ho[i]._id,
+            //@ts-ignore
+            time: addHours(ho[i].time, 1),
+            type: objType,
+            //@ts-ignore
+            hour: gapType(ho[i].time.getHours() - 3, ho[i].type),
+            //@ts-ignore
+            gap: calcGapForAdmin(
+              {
+                //@ts-ignore
+                hour: ho[i].time.getHours(),
+                type: ho[i].type,
+              },
+              {
+                //@ts-ignore
+                hour: ho[i + 1].time.getHours(),
+                type: ho[i + 1].type,
+              }
+            ),
+            iscatched: false,
+          };
 
-        ///
-        LST.push(newObjj);
+          LST.push(newObjj);
+        }
+
+        LST.push(newObj);
       }
-      LST.push(newObj);
     }
+    
     LST.sort(function (a, b) {
-      if (a.hour != b.hour) {
-        //@ts-ignore
-        return new Date(a.time) - new Date(b.time);
-      } else {
-        return a.type.charCodeAt(0) - b.type.charCodeAt(0);
-      }
+      //@ts-ignore
+      return new Date(a.time) - new Date(b.time);
     });
+
     //@ts-ignore
     objectToReturn[timeAsString] = LST;
     res.send({ events: objectToReturn }).status(200);
@@ -262,6 +355,7 @@ export const AdminDeleteQueue = async (req: Request, res: Response) => {
   }
 };
 
+// Work good!
 export const getAvailableHours = async (req: Request, res: Response) => {
   //@ts-ignore
   const Day = returnDate(req.query.date);
@@ -278,6 +372,7 @@ export const getAvailableHours = async (req: Request, res: Response) => {
     return { hour: new Date(x.time).getUTCHours(), type: x.type, to: x.to };
   });
 
+  // Add limit hours of the day
   if (!hours.some((e) => e.type == "G")) {
     //@ts-ignore
     hours.push({ hour: new Date(Day.setHours(12)).getUTCHours(), type: "M" });
@@ -291,38 +386,34 @@ export const getAvailableHours = async (req: Request, res: Response) => {
     hours.push({ hour: Number(limit?.to), type: "M" });
   }
 
+  //Remove Linit Hours
   const ho = hours.filter((x) => x.type != "G");
 
+  //Sort By Hours
   ho.sort((a, b) => {
     //@ts-ignore
     return a.hour - b.hour;
   });
+  if (ho[1].type == "M") {
+    let temp = ho[1];
+    ho[1] = ho[0];
+    ho[0] = temp;
+  }
 
+  //type == the type of the queue the user wants to get
   const type = req.query.type;
 
+  //gaps == Array of {gap: number, startFrom: number}
   const gaps = getQueueGaps(ho);
 
-  let availableHours = [];
-  switch (type) {
-    case "1":
-      availableHours = checkHours(gaps, "1");
-      break;
-    case "2":
-      availableHours = checkHours(gaps, "2");
-      break;
-    case "3":
-      availableHours = checkHours(gaps, "3");
-      break;
-    default:
-      break;
-  }
+  let availableHours = checkHours(gaps, type);
 
   res.send({ events: availableHours }).status(200);
 };
 
-//@ts-ignore
-function getQueueGaps(sortedQueues) {
+function getQueueGaps(sortedQueues: any) {
   // Initialize an array to store the gaps
+
   const gaps = [];
 
   // Loop through the queues and calculate the gaps
@@ -334,11 +425,8 @@ function getQueueGaps(sortedQueues) {
     // Calculate the gap between the current queue and the next queue
     if (currentQueue.type == "M") {
       gap =
-        1 +
         nextQueue.hour +
-        (nextQueue.type === "F" ||
-        nextQueue.type === "D" ||
-        nextQueue.type === "B"
+        (nextQueue.type == "B" || nextQueue.type == "D" || nextQueue.type == "F"
           ? 0.5
           : 0) -
         currentQueue.hour;
@@ -346,51 +434,44 @@ function getQueueGaps(sortedQueues) {
       gap =
         nextQueue.hour -
         (currentQueue.hour +
-          (currentQueue.type === "C" || currentQueue.type === "D" ? 1 : 0) +
-          (currentQueue.type === "E" ||
-          currentQueue.type === "F" ||
-          currentQueue.type === "B"
+          (currentQueue.type == "E" ? 0 : 1) +
+          (currentQueue.type == "C" ||
+          currentQueue.type == "E" ||
+          currentQueue.type == "B"
             ? 0.5
-            : 0));
+            : 0) +
+          (currentQueue.type == "D" && +0.5));
     } else {
       gap =
         nextQueue.hour +
-        (nextQueue.type === "F" ||
-        nextQueue.type === "D" ||
-        nextQueue.type === "B"
+        (nextQueue.type == "B" || nextQueue.type == "D" || nextQueue.type == "F"
           ? 0.5
           : 0) -
         (currentQueue.hour +
-          (currentQueue.type === "C" || currentQueue.type === "D" ? 1 : 0) +
-          (currentQueue.type === "E" ||
-          currentQueue.type === "F" ||
-          currentQueue.type === "B"
+          (currentQueue.type == "E" ? 0 : 1) +
+          (currentQueue.type == "C" ||
+          currentQueue.type == "E" ||
+          currentQueue.type == "B"
             ? 0.5
-            : 0));
+            : 0) +
+          (currentQueue.type == "D" && +0.5));
     }
-
     // Add the gap to the gaps array
-    if (gap > 1) {
+    if (gap != 0) {
       gaps.push({
-        gap: gap - 1,
+        gap: gap,
         startFrom:
           currentQueue.hour +
-          (currentQueue.type === "C" ||
-          currentQueue.type === "D" ||
-          currentQueue.type === "A" ||
-          currentQueue.type === "B"
-            ? 1
-            : 0) +
-          (currentQueue.type === "C" ||
-          currentQueue.type === "E" ||
-          currentQueue.type === "F" ||
-          currentQueue.type === "B"
+          (currentQueue.type == "E" ? 0 : 1) +
+          (currentQueue.type == "C" ||
+          currentQueue.type == "E" ||
+          currentQueue.type == "B"
             ? 0.5
-            : 0),
+            : 0) +
+          (currentQueue.type == "D" && +0.5),
       });
     }
   }
-
   return gaps;
 }
 
@@ -411,18 +492,14 @@ const calcGapForAdmin = (currentQueue, nextQueue) => {
   // Calculate the gap between the current queue and the next queue
   if (currentQueue.type == "M") {
     gap =
-      1 +
-      nextQueue.hour +
-      (nextQueue.type === "F" ||
-      nextQueue.type === "D" ||
-      nextQueue.type === "B"
-        ? 0.5
-        : 0) -
-      currentQueue.hour;
+    nextQueue.hour +
+    (nextQueue.type === "F" ||
+    nextQueue.type === "D" ||
+    nextQueue.type === "B"
+    ? 0.5
+    : 0) -
+    currentQueue.hour;
   } else if (nextQueue.type == "M") {
-    console.log("nextQueue", currentQueue.hour);
-    console.log(nextQueue.hour);
-
     gap =
       nextQueue.hour -
       (currentQueue.hour +
@@ -441,13 +518,18 @@ const calcGapForAdmin = (currentQueue, nextQueue) => {
         ? 0.5
         : 0) -
       (currentQueue.hour +
-        (currentQueue.type === "C" || currentQueue.type === "D" ? 1 : 0) +
+        (currentQueue.type === "C" ||
+        currentQueue.type === "D" ||
+        currentQueue.type === "A"
+          ? 1
+          : 0) +
         (currentQueue.type === "E" ||
         currentQueue.type === "F" ||
         currentQueue.type === "B"
           ? 0.5
           : 0));
   }
+
   return Math.floor(gap);
 };
 

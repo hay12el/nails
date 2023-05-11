@@ -10,6 +10,12 @@ export const styles = StyleSheet.create({
     bottom: 41,
     width: "100%",
   },
+  overover: {
+    display: 'flex',
+    position: 'absolute',
+    right: '49%',
+    zIndex: 60,
+  },
   menuNavigator: {
     direction: "rtl",
     display: "flex",

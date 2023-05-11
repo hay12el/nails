@@ -20,11 +20,6 @@ const AboutMe = () => {
         // marginVertical: 20,
       }}
     >
-      {/* <Title text={"על עצמי"} /> */}
-      {/* <View style={{ width: "100%", paddingBottom: 20 }}>
-        <LittleTitle text={"קצת עליי"} />
-      </View> */}
-
       <View style={styles.massageStyle}>
         <Text
           style={{
@@ -42,7 +37,7 @@ const AboutMe = () => {
             textAlign: "center",
           }}
         >
-          {text}
+          {text && text}
         </Text>
       </View>
     </View>

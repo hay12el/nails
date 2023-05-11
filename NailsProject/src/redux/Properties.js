@@ -33,6 +33,7 @@ const SECTIONS = [
 const initialState = {
   aboutMe: `אני עושה לק ג'ל עם מניקור בתשומת לב מירבית - אשמח לקבל אתכן ולעזור לשמור על הציפורניים שלכן יפות ומטופחות לאורך זמן.`,
   photos: SECTIONS,
+  loading: false,
   Linkim: {
     wase: "https://ul.waze.com/ul?ll=31.24937992%2C34.78982806&navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location",
     whatsapp: "https://wa.me/+972545806799",
@@ -59,9 +60,12 @@ export const propertiesSlice = createSlice({
     SETABOUTME: (state, action) => {
         state.aboutMe = action.payload.aboutMe;
     },
+    SETLOADING: (state, action) => {
+      state.loading = action.payload.loading;
+    }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { SETPROPERTIES, SETPHOTOS, SETLINKIM, SETABOUTME } = propertiesSlice.actions;
+export const { SETPROPERTIES, SETPHOTOS, SETLINKIM, SETABOUTME, SETLOADING } = propertiesSlice.actions;
 export default propertiesSlice.reducer;

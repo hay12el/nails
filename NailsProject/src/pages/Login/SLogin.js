@@ -22,9 +22,8 @@ export const styles = StyleSheet.create({
     position: "absolute",
     height: 30,
     width: 78,
+    zIndex: 10,
     left: "40%",
     top: "50%",
-    alignItems: "center",
-    justifyContent: "center",
   },
 });

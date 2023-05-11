@@ -26,7 +26,6 @@ const MyQueuesQ = (props) => {
 
   let theTime = new Date(item.time);
   const hourAsType = (hour, type) => {
-    console.log(hour, type);
     var hourToReurn = { text: "", type: "" };
     switch (type) {
       case "A":

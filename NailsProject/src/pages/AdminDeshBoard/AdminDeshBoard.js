@@ -121,6 +121,7 @@ export default function Admin_pannel({ navigation }) {
   }
 
   useEffect(() => {
+    setItems({});
     setThinking(true);
     const getData = async () => {
       API.get("/event/AdminGetDayQueues", {

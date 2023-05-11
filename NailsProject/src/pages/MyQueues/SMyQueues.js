@@ -6,9 +6,8 @@ export const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor:"white",
-    borderBottomRightRadius: 25,
-    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 15,
+    borderBottomLeftRadius: 15,
   },
   linearGradientIOS: {
     height: 180,

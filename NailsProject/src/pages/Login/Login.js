@@ -1,9 +1,9 @@
 import { StatusBar } from "expo-status-bar";
 import API from "../../api/api";
-import React from "react";
+import React, { useEffect } from "react";
 import { Formik } from "formik";
 import { LinearGradient } from "expo-linear-gradient";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Header from "../../components/Header/Header";
 import {
   InnerContainer,
@@ -30,7 +30,7 @@ import Constants from "expo-constants";
 import { LOGIN } from "../../redux/User";
 import { Overlay } from "react-native-elements";
 import { styles } from "./SLogin";
-import colors from "../../styles/colors";
+import { SETLOADING } from "../../redux/Properties";
 
 const StatusBarHeight = Constants.statusBarHeight;
 
@@ -38,18 +38,17 @@ const Login = ({ navigation }) => {
   ////
   const dispatch = useDispatch();
   ////
-  const [thinking, setThinking] = useState(false);
   const [hidePassword, setHidePassword] = useState(true);
+  const loading = useSelector((state) => state.properties.loading);
 
   const LOgin = async (values, formikActions) => {
-    setThinking(true);
+    dispatch(SETLOADING({ loading: true }));
     const cleanEmail = values.email.trim().toLowerCase();
     const cleanData = { email: cleanEmail, password: values.password };
     API.post("/user/login", { ...cleanData })
       .then(async (response) => {
         const newUser = response.data.user;
-        setThinking(false);
-        console.log("ok");
+        dispatch(SETLOADING({ loading: false }));
         dispatch(
           LOGIN({
             token: response.data.token,
@@ -67,7 +66,7 @@ const Login = ({ navigation }) => {
         await AsyncStorage.setItem("myAdmin", newUser.myAdmin);
       })
       .catch((err) => {
-        setThinking(false);
+        dispatch(SETLOADING({ loading: false }));
         console.log(err);
       });
   };
@@ -123,7 +122,7 @@ const Login = ({ navigation }) => {
           style={styles.loading}
           size="large"
           color="#0000ff"
-          animating={thinking}
+          animating={loading}
         />
       </InnerContainer>
     </View>

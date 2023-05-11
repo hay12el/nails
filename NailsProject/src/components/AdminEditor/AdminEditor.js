@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  Platform
 } from "react-native";
 import React, { useRef, useState } from "react";
 import { styles } from "./SAdminEditor";
@@ -60,8 +61,9 @@ const AdminEditor = () => {
       ...hoursLimitation,
       date: currentDate.toLocaleDateString(),
     });
-    if (Platform.OS === "android") setShowDate(false);
-    setDob(currentDate);
+    // if (Platform.OS === "android") 
+    setShowDate(false);
+    // setDob(currentDate);
   };
 
   const handleTextChange = async (text) => {
@@ -108,7 +110,6 @@ const AdminEditor = () => {
 
   return (
     <View style={styles.adminContainer}>
-      
       <Overlay isVisible={openPicker.open}>
         <View
           style={{
@@ -409,12 +410,12 @@ const AdminEditor = () => {
         </View>
       </View>
       <View style={styles.aboutMeSection}>
-      <ActivityIndicator
-        style={styles.loading}
-        size="large"
-        color={colors.forth}
-        animating={thinking}
-      />
+        <ActivityIndicator
+          style={styles.loading}
+          size="large"
+          color={colors.forth}
+          animating={thinking}
+        />
         <Text
           style={{
             textAlign: "left",
@@ -423,7 +424,7 @@ const AdminEditor = () => {
             color: colors.text,
           }}
         >
-          שינוי שדה "קצת עליי":
+          עדכון שעות פעילות
         </Text>
         <View
           style={{
@@ -431,9 +432,10 @@ const AdminEditor = () => {
             flexDirection: "column",
             gap: 40,
             marginVertical: 20,
-            width: "100%",
+            width: 250,
             alignItems: "flex-start",
             justifyContent: "flex-start",
+            direction: "rtl",
           }}
         >
           <View
@@ -441,7 +443,7 @@ const AdminEditor = () => {
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "space-around",
+              justifyContent: "space-between",
               width: "100%",
             }}
           >
@@ -478,7 +480,7 @@ const AdminEditor = () => {
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "space-around",
+              justifyContent: "space-between",
               width: "100%",
             }}
           >
@@ -514,7 +516,7 @@ const AdminEditor = () => {
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "space-around",
+              justifyContent: "space-between",
               width: "100%",
             }}
           >
@@ -554,17 +556,29 @@ const AdminEditor = () => {
             width: "100%",
           }}
         >
-          {showDate && (
-            <DateTimePicker
-              locale="he-HE"
-              style={{ width: "100%" }}
-              testID="dateTimePicker"
-              value={date}
-              mode="date"
-              display="default"
-              onChange={onChange}
-            />
-          )}
+          {(showDate && Platform.OS == 'android') ? (
+              <DateTimePicker
+                locale="he-HE"
+                style={{ width: "100%" }}
+                testID="dateTimePicker"
+                value={date}
+                mode="date"
+                display="default"
+                onChange={onChange}
+              />
+          ) :
+            <Overlay isVisible={showDate}>
+              <DateTimePicker
+                locale="he-HE"
+                style={{ width: "100%" }}
+                testID="dateTimePicker"
+                value={date}
+                mode="date"
+                display="default"
+                onChange={onChange}
+              />
+            </Overlay>
+          }
           <View
             style={{ width: "100%", display: "flex", alignItems: "center" }}
           >

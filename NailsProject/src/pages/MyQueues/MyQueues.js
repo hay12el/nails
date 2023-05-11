@@ -43,6 +43,7 @@ export default function MyQueues({ navigation }) {
         .then((response) => {
           setOk(!ok);
           setQueues(response.data);
+          console.log(response.data);
           setThinking(false);
         })
         .catch((err) => {
@@ -60,33 +61,24 @@ export default function MyQueues({ navigation }) {
 
   return (
     <View
-      style={{ height: "100%", paddingBottom: 90, marginTop: StatusBarHeight }}
+      style={{
+        height: "100%",
+        // paddingBottom: 90,
+        marginTop: StatusBarHeight,
+        backgroundColor: "white",
+      }}
     >
-      {Platform.OS === "android" ? (
-        <LinearGradient
-          colors={[colors.first, colors.first, colors.second]}
-          locations={[0.0, 0.7, 1.0]}
-          style={styles.linearGradient}
-        >
-          <Image
-            source={require("../../../assets/2.png")}
-            style={{ height: 80, width: 70 }}
-          ></Image>
-          <Text style={{ fontSize: 30, color: "#364F6B" }}>התורים שלך:</Text>
-        </LinearGradient>
-      ) : (
-        <LinearGradient
-          colors={[colors.first, colors.first, colors.second]}
-          locations={[0.0, 0.7, 1.0]}
-          style={styles.linearGradientIOS}
-        >
-          <Image
-            source={require("../../../assets/2.png")}
-            style={{ height: 80, width: 70 }}
-          ></Image>
-          <Text style={{ fontSize: 30, color: "#364F6B" }}>התורים שלך:</Text>
-        </LinearGradient>
-      )}
+      <LinearGradient
+        colors={[colors.first, colors.first, colors.second]}
+        locations={[0.0, 0.7, 1.0]}
+        style={styles.linearGradient}
+      >
+        <Image
+          source={require("../../../assets/2.png")}
+          style={{ height: 80, width: 70 }}
+        ></Image>
+        <Text style={{ fontSize: 30, color: "#364F6B" }}>התורים שלך:</Text>
+      </LinearGradient>
 
       <View
         style={{
@@ -110,7 +102,7 @@ export default function MyQueues({ navigation }) {
             </Text>
           </View>
         ) : (
-          <View  style={{ paddingBottom: 30, height: '80%',paddingTop: 10 }}>
+          <View style={{ marginBottom: 30, paddingTop: 10, height:'69%' }}>
             <FlatList
               data={queues}
               renderItem={({ item }) => (
@@ -121,15 +113,15 @@ export default function MyQueues({ navigation }) {
           </View>
         )}
       </View>
-      <NavBar rreload={rreload} />
-
       <ActivityIndicator
         style={styles.loading}
         size="large"
         color="#0000ff"
         animating={thinking}
       />
-
+      {/* <View style={{ display: "flex", backgroundColor: "black", height: 20 }}> */}
+        <NavBar rreload={rreload} />
+      {/* </View> */}
     </View>
   );
 }

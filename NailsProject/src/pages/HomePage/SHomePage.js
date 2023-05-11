@@ -15,6 +15,17 @@ export const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 
+  loading: {
+    position: "absolute",
+    zIndex: 10,
+    height: 30,
+    width: 78,
+    left: "40%",
+    top: "50%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
   main: {
     height: "100%",
     width: "100%",
