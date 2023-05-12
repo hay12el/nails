@@ -5,9 +5,10 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
-  Platform
+  Platform,
+  Alert,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { styles } from "./SAdminEditor";
 import { useSelector, useDispatch } from "react-redux";
 import photos from "../../utils/photos";
@@ -29,7 +30,7 @@ const AdminEditor = () => {
   const dispatch = useDispatch();
   const [text, onChangeText] = useState("");
   const [hoursLimitation, setHoursLimitation] = useState({
-    date: "1/1/2020",
+    date: new Date(),
     from: 0,
     to: 0,
   });
@@ -54,12 +55,11 @@ const AdminEditor = () => {
   };
 
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
     setHoursLimitation({
       ...hoursLimitation,
-      date: currentDate.toLocaleDateString(),
+      date: selectedDate,
     });
-    // if (Platform.OS === "android") 
+    // if (Platform.OS === "android")
     setShowDate(false);
     // setDob(currentDate);
   };
@@ -79,24 +79,65 @@ const AdminEditor = () => {
 
   const updateHours = async () => {
     setThinking(true);
-    API.post("/event/addNewQueue", {
-      token: user.token,
-      time: hoursLimitation.date,
-      hour: hoursLimitation.from,
-      to: hoursLimitation.to,
-      type: "G",
-    })
-      .then(async (response) => {
-        if (!(typeof response.data == "string")) {
-          setThinking(false);
-        } else {
-          setThinking(false);
-        }
-      })
-      .catch((err) => {
-        setThinking(false);
-        console.log(err);
-      });
+    try {
+      if (Number(hoursLimitation.to) < Number(hoursLimitation.from)) {
+        Alert.alert(
+          "שימי לב!",
+          "שעת ההתחלה צריכה להיות לפני שעת הסיום",
+          [
+            {
+              text: "סבבה!",
+            },
+          ],
+          {
+            cancelable: true,
+          }
+        );
+      } else {
+        const res = await API.post("/event/addNewQueue", {
+          token: user.token,
+          time: hoursLimitation.date,
+          hour: hoursLimitation.from,
+          to: hoursLimitation.to,
+          type: "G",
+        })
+          .then(async (response) => {
+            Alert.alert(
+              "שימי לב!",
+              `מעולה! טווח השעות ביום זה נקבל ל${hoursLimitation.from} עד ${hoursLimitation.to}`,
+              [
+                {
+                  text: "סבבה!",
+                },
+              ],
+              {
+                cancelable: true,
+              }
+            );
+
+            setThinking(false);
+          })
+          .catch((err) => {
+            Alert.alert(
+              "שימי לב!",
+              err.response.data,
+              [
+                {
+                  text: "סבבה!",
+                },
+              ],
+              {
+                cancelable: true,
+              }
+            );
+
+            setThinking(false);
+          });
+      }
+    } catch (error) {
+      setThinking(false);
+    }
+    setThinking(false);
   };
 
   ////////////
@@ -141,16 +182,18 @@ const AdminEditor = () => {
               );
             }}
             onValueChange={(data, selectedIndex) => {
-              if (openPicker.kind == "from") {
-                setHoursLimitation({
-                  ...hoursLimitation,
-                  from: data.split(":")[0],
-                });
-              } else {
-                setHoursLimitation({
-                  ...hoursLimitation,
-                  to: data.split(":")[0],
-                });
+              if (typeof data != "undefined") {
+                if (openPicker.kind == "from") {
+                  setHoursLimitation({
+                    ...hoursLimitation,
+                    from: data.split(":")[0],
+                  });
+                } else {
+                  setHoursLimitation({
+                    ...hoursLimitation,
+                    to: data.split(":")[0],
+                  });
+                }
               }
             }}
             wrapperHeight={180}
@@ -469,7 +512,7 @@ const AdminEditor = () => {
                   color: colors.text,
                 }}
               >
-                <Text>{hoursLimitation.date}</Text>
+                <Text>{hoursLimitation.date.toISOString().split("T")[0]}</Text>
               </Text>
             </TouchableOpacity>
           </View>
@@ -554,29 +597,29 @@ const AdminEditor = () => {
             width: "100%",
           }}
         >
-          {(showDate && Platform.OS == 'android') ? (
-              <DateTimePicker
-                locale="he-HE"
-                style={{ width: "100%" }}
-                testID="dateTimePicker"
-                value={date}
-                mode="date"
-                display="default"
-                onChange={onChange}
-              />
-          ) :
+          {showDate && Platform.OS == "android" ? (
+            <DateTimePicker
+              locale="he-HE"
+              style={{ width: "100%" }}
+              testID="dateTimePicker"
+              value={hoursLimitation.date}
+              mode="date"
+              display="default"
+              onChange={onChange}
+            />
+          ) : (
             <Overlay isVisible={showDate}>
               <DateTimePicker
                 locale="he-HE"
                 style={{ width: "100%" }}
                 testID="dateTimePicker"
-                value={date}
+                value={hoursLimitation.date}
                 mode="date"
                 display="default"
                 onChange={onChange}
               />
             </Overlay>
-          }
+          )}
           <View
             style={{ width: "100%", display: "flex", alignItems: "center" }}
           >

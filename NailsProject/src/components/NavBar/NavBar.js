@@ -56,8 +56,8 @@ const NavBar = (props) => {
 
       <View style={{ display: "flex", alignItems: "center" }}>
         <LinearGradient
-          colors={[Color.first, Color.first, Color.second]}
-          locations={[0, 0.5, 1]}
+          colors={[Color.first, Color.second, Color.second]}
+          locations={[0, 0.35, 1]}
           style={styles.menuNavigator}
         >
           <View>

@@ -43,7 +43,6 @@ export default function MyQueues({ navigation }) {
         .then((response) => {
           setOk(!ok);
           setQueues(response.data);
-          console.log(response.data);
           setThinking(false);
         })
         .catch((err) => {

@@ -50,15 +50,48 @@ export const addNewQueue = async (req: Request, res: Response) => {
   }
 
   try {
-    //make new Event
-    const event = new Event({
-      admin: myAdmin,
-      time: new Date(dateObj),
+    let event;
+    if (type == "G") {
+      const Day = returnDate(time);
+
+      let nextDay = new Date(Day);
+      nextDay.setDate(Day.getDate() + 1);
+
+      const queues = await Event.find({
+        //@ts-ignore
+        admin: req.userId,
+        time: { $gte: Day, $lt: nextDay },
+      });
+
       //@ts-ignore
-      connectTo: req.userId,
-      to: to,
-      type: type,
-    });
+      const hours = queues.map((x) => new Date(x.time));
+      const hoursToReturn = hours.map((x: Date) => x.getUTCHours());
+      if (
+        hoursToReturn.some((num) => num < hour) ||
+        hoursToReturn.some((num) => num > to)
+      ) {
+        throw "קיימים תורים בתווך, אנא בטלי אותם לפני קביעת שעות הפעילות";
+      } else {
+        event = new Event({
+          //@ts-ignore
+          admin: req.userId,
+          time: new Date(dateObj),
+          //@ts-ignore
+          connectTo: req.userId,
+          to: to,
+          type: type,
+        });
+      }
+    } else {
+      event = new Event({
+        admin: myAdmin,
+        time: new Date(dateObj),
+        //@ts-ignore
+        connectTo: req.userId,
+        to: to,
+        type: type,
+      });
+    }
 
     //save the new Event to database
     await event.save();
@@ -72,9 +105,7 @@ export const addNewQueue = async (req: Request, res: Response) => {
     res.send(afterUpdate?.queues).status(200);
   } catch (err) {
     //@ts-ignore
-    console.log(err.message);
-
-    res.sendStatus(404);
+    res.status(404).send(err);
   }
 };
 
@@ -168,25 +199,27 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
       ho[1] = ho[0];
       ho[0] = temp;
     }
-    
 
     const objectToReturn = {};
     let LST = [];
     //Go through all the queues
     for (let i = 0; i < ho.length - 1; i++) {
       // if this is the upper limit "queue"
-      if (ho[i].type == "M" && calcGapForAdmin(
-        {
-          //@ts-ignore
-          hour: ho[i].time.getHours(),
-          type: ho[i].type,
-        },
-        {
-          //@ts-ignore
-          hour: ho[i + 1].time.getHours(),
-          type: ho[i + 1].type,
-        }
-      ) >= 1) {
+      if (
+        ho[i].type == "M" &&
+        calcGapForAdmin(
+          {
+            //@ts-ignore
+            hour: ho[i].time.getHours(),
+            type: ho[i].type,
+          },
+          {
+            //@ts-ignore
+            hour: ho[i + 1].time.getHours(),
+            type: ho[i + 1].type,
+          }
+        ) >= 1
+      ) {
         let objType;
         if (
           ho[i + 1].type == "A" ||
@@ -220,10 +253,9 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
             }
           ),
           iscatched: false,
-        };       
+        };
         LST.push(newObj);
-      } 
-      else if(ho[i].type != "M") {
+      } else if (ho[i].type != "M") {
         //find the user associated with that queue
         let user = users.find(
           (us) => us._id.toString() == ho[i].connectTo.toString()
@@ -262,15 +294,19 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
         ) {
           let objType;
           // the last appointment
-          if(ho[i+1].type == 'M'){
+          if (ho[i + 1].type == "M") {
             if (ho[i].type == "A" || ho[i].type == "D" || ho[i].type == "F") {
               objType = "A";
-            }else{
+            } else {
               objType = "C";
             }
           }
           // Gap between two appoinments
-          else if (ho[i].type == "A" || ho[i].type == "D" || ho[i].type == "F") {
+          else if (
+            ho[i].type == "A" ||
+            ho[i].type == "D" ||
+            ho[i].type == "F"
+          ) {
             if (
               ho[i + 1].type == "A" ||
               ho[i + 1].type == "C" ||
@@ -307,7 +343,7 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
               }
             ),
             iscatched: false,
-           
+
             type: objType,
             //@ts-ignore
             hour: gapType(ho[i].time.getHours() - 3, ho[i].type),
@@ -319,7 +355,7 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
         LST.push(newObj);
       }
     }
-    
+
     LST.sort(function (a, b) {
       //@ts-ignore
       return new Date(a.time) - new Date(b.time);
@@ -392,26 +428,21 @@ export const getAvailableHours = async (req: Request, res: Response) => {
     //@ts-ignore
     return a.hour - b.hour;
   });
-  if (ho[1].type == "M") {
+  if (ho[1].type == "M" && ho[0].type != "M") {
     let temp = ho[1];
     ho[1] = ho[0];
     ho[0] = temp;
   }
-
-  //type == the type of the queue the user wants to get
-  const type = req.query.type;
-
   //gaps == Array of {gap: number, startFrom: number}
   const gaps = getQueueGaps(ho);
 
-  let availableHours = checkHours(gaps, type);
+  let availableHours = checkHours(gaps, req.query.type);
 
   res.send({ events: availableHours }).status(200);
 };
 
 function getQueueGaps(sortedQueues: any) {
   // Initialize an array to store the gaps
-
   const gaps = [];
 
   // Loop through the queues and calculate the gaps
@@ -456,20 +487,28 @@ function getQueueGaps(sortedQueues: any) {
     }
     // Add the gap to the gaps array
     if (gap != 0) {
-      gaps.push({
-        gap: gap,
-        startFrom:
-          currentQueue.hour +
-          (currentQueue.type == "E" ? 0 : 1) +
-          (currentQueue.type == "C" ||
-          currentQueue.type == "E" ||
-          currentQueue.type == "B"
-            ? 0.5
-            : 0) +
-          (currentQueue.type == "D" && +0.5),
-      });
+      if (currentQueue.type == "M" && nextQueue.type == "M") {
+        gaps.push({
+          gap: gap,
+          startFrom: currentQueue.hour,
+        });
+      } else {
+        gaps.push({
+          gap: gap,
+          startFrom:
+            currentQueue.hour +
+            (currentQueue.type == "E" ? 0 : 1) +
+            (currentQueue.type == "C" ||
+            currentQueue.type == "E" ||
+            currentQueue.type == "B"
+              ? 0.5
+              : 0) +
+            (currentQueue.type == "D" && +0.5),
+        });
+      }
     }
   }
+
   return gaps;
 }
 
@@ -490,13 +529,13 @@ const calcGapForAdmin = (currentQueue, nextQueue) => {
   // Calculate the gap between the current queue and the next queue
   if (currentQueue.type == "M") {
     gap =
-    nextQueue.hour +
-    (nextQueue.type === "F" ||
-    nextQueue.type === "D" ||
-    nextQueue.type === "B"
-    ? 0.5
-    : 0) -
-    currentQueue.hour;
+      nextQueue.hour +
+      (nextQueue.type === "F" ||
+      nextQueue.type === "D" ||
+      nextQueue.type === "B"
+        ? 0.5
+        : 0) -
+      currentQueue.hour;
   } else if (nextQueue.type == "M") {
     gap =
       nextQueue.hour -
@@ -508,7 +547,6 @@ const calcGapForAdmin = (currentQueue, nextQueue) => {
           ? 0.5
           : 0));
   } else {
-    
     gap =
       nextQueue.hour +
       (nextQueue.type === "F" ||
@@ -516,16 +554,14 @@ const calcGapForAdmin = (currentQueue, nextQueue) => {
       nextQueue.type === "B"
         ? 0.5
         : 0) -
-        (currentQueue.hour +
-          (currentQueue.type == "E" ? 0 : 1) +
-          (currentQueue.type == "C" ||
-          currentQueue.type == "E" ||
-          currentQueue.type == "B"
-            ? 0.5
-            : 0) +
-          (currentQueue.type == "D" && +0.5));
-    console.log(currentQueue, nextQueue, gap);
-
+      (currentQueue.hour +
+        (currentQueue.type == "E" ? 0 : 1) +
+        (currentQueue.type == "C" ||
+        currentQueue.type == "E" ||
+        currentQueue.type == "B"
+          ? 0.5
+          : 0) +
+        (currentQueue.type == "D" && +0.5));
   }
 
   return gap;

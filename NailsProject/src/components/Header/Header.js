@@ -77,7 +77,7 @@ const Header = ({scrollA}) => {
     <Animated.View style={styles.HeaderContainer}>
         <LinearGradient
           colors={[colors.first, colors.first, colors.second]}
-          locations={[0.0, 0.7, 1.0]}
+          locations={[0.0, 0.85, 1.0]}
           style={styles.linearGradient}
         >
           <Image
