@@ -36,8 +36,6 @@ const AdminEditor = () => {
   const [showDate, setShowDate] = useState(false);
   const [date, setDate] = useState(new Date());
   const [thinking, setThinking] = useState(false);
-
-  /////////// To Change!!!!!
   const [images, setImage] = useState([]);
   const [imageForOverlay, setimageForOverlay] = useState(null);
   const [open, setOpen] = useState(false);

@@ -168,7 +168,7 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
       ho[1] = ho[0];
       ho[0] = temp;
     }
-    // console.log(ho);
+    
 
     const objectToReturn = {};
     let LST = [];
@@ -220,11 +220,10 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
             }
           ),
           iscatched: false,
-        };
-        // console.log(newObj);
-        
+        };       
         LST.push(newObj);
-      } else if(ho[i].type != "M") {
+      } 
+      else if(ho[i].type != "M") {
         //find the user associated with that queue
         let user = users.find(
           (us) => us._id.toString() == ho[i].connectTo.toString()
@@ -259,10 +258,19 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
               hour: ho[i + 1].time.getHours(),
               type: ho[i + 1].type,
             }
-          ) >= 1
+          ) != 0
         ) {
           let objType;
-          if (ho[i].type == "A" || ho[i].type == "D" || ho[i].type == "F") {
+          // the last appointment
+          if(ho[i+1].type == 'M'){
+            if (ho[i].type == "A" || ho[i].type == "D" || ho[i].type == "F") {
+              objType = "A";
+            }else{
+              objType = "C";
+            }
+          }
+          // Gap between two appoinments
+          else if (ho[i].type == "A" || ho[i].type == "D" || ho[i].type == "F") {
             if (
               ho[i + 1].type == "A" ||
               ho[i + 1].type == "C" ||
@@ -284,22 +292,8 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
               objType = "D";
             }
           }
-          //@ts-ignore
           let newObjj = {
-            user: {
-              userId: user?._id,
-              username: user?.username,
-              email: user?.email,
-              phone: user?.phone,
-              isAdmin: user?.isAdmin,
-            },
-            postId: ho[i]._id,
-            //@ts-ignore
-            time: addHours(ho[i].time, 1),
-            type: objType,
-            //@ts-ignore
-            hour: gapType(ho[i].time.getHours() - 3, ho[i].type),
-            //@ts-ignore
+            time: ho[i + 1].time,
             gap: calcGapForAdmin(
               {
                 //@ts-ignore
@@ -313,6 +307,10 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
               }
             ),
             iscatched: false,
+           
+            type: objType,
+            //@ts-ignore
+            hour: gapType(ho[i].time.getHours() - 3, ho[i].type),
           };
 
           LST.push(newObjj);
@@ -510,6 +508,7 @@ const calcGapForAdmin = (currentQueue, nextQueue) => {
           ? 0.5
           : 0));
   } else {
+    
     gap =
       nextQueue.hour +
       (nextQueue.type === "F" ||
@@ -517,20 +516,19 @@ const calcGapForAdmin = (currentQueue, nextQueue) => {
       nextQueue.type === "B"
         ? 0.5
         : 0) -
-      (currentQueue.hour +
-        (currentQueue.type === "C" ||
-        currentQueue.type === "D" ||
-        currentQueue.type === "A"
-          ? 1
-          : 0) +
-        (currentQueue.type === "E" ||
-        currentQueue.type === "F" ||
-        currentQueue.type === "B"
-          ? 0.5
-          : 0));
+        (currentQueue.hour +
+          (currentQueue.type == "E" ? 0 : 1) +
+          (currentQueue.type == "C" ||
+          currentQueue.type == "E" ||
+          currentQueue.type == "B"
+            ? 0.5
+            : 0) +
+          (currentQueue.type == "D" && +0.5));
+    console.log(currentQueue, nextQueue, gap);
+
   }
 
-  return Math.floor(gap);
+  return gap;
 };
 
 //@ts-ignore

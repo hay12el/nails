@@ -129,7 +129,6 @@ export default function Admin_pannel({ navigation }) {
       })
         .then((response) => {
           setThinking(false);
-          // console.log(response.data.events);
           setItems(response.data.events);
           setThinking(false);
         })

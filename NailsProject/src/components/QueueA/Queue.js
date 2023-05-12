@@ -120,19 +120,19 @@ const Queue = ({
     var hourToReurn = { text: "", type: "" };
     switch (type) {
       case "A":
-        hourToReurn.text = hour + ":00 - " + (hour + gap) + ":00";
+        hourToReurn.text = hour + ":00 - " + (hour + Math.floor(gap)) + ":00";
         hourToReurn.type = "A";
         break;
       case "B":
-        hourToReurn.text = hour + ":00 - " + (hour + gap) + ":30";
+        hourToReurn.text = hour + ":00 - " + (hour + Math.floor(gap)) + ":30";
         hourToReurn.type = "B";
         break;
       case "C":
-        hourToReurn.text = hour + ":30 - " + (hour + gap) + ":00";
+        hourToReurn.text = hour + ":30 - " + (hour + Math.floor(gap)) + ":00";
         hourToReurn.type = "C";
         break;
       case "D":
-        hourToReurn.text = hour + ":30 - " + (hour + gap) + ":30";
+        hourToReurn.text = hour + ":30 - " + (hour + Math.floor(gap)) + ":30";
         hourToReurn.type = "D";
         break;
       default:
