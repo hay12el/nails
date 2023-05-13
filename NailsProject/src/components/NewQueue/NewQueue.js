@@ -21,6 +21,7 @@ import { styles } from "./SNewQueue";
 import colors from "../../styles/colors";
 import CalendarStrip from "react-native-calendar-strip";
 import moment from "moment";
+import {SETOPEN} from '../../redux/Properties'
 import "moment/locale/he";
 
 const days = {
@@ -61,10 +62,10 @@ moment.updateLocale("he", {
 });
 
 const NewQueue = (props) => {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const [thinking, setThinking] = useState(false);
   const [indicator, setIndicator] = useState(false);
-  const [toApear, SetApearence] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [Success, setSuccess] = useState(false);
   const [Error, setError] = useState(false);
@@ -74,6 +75,7 @@ const NewQueue = (props) => {
   const [choousenHour, setChoosenHour] = useState({});
   const [availableHours, setAvailableHours] = useState([]);
   const rreload = props.rreload;
+  const openAdding = useSelector((state) => state.properties.openAdding);
 
   const addQueue = async () => {
     setThinking(true);
@@ -106,7 +108,11 @@ const NewQueue = (props) => {
   };
 
   function visi() {
-    SetApearence(!toApear);
+    if(openAdding){
+      dispatch(SETOPEN({open: false}))
+    }else{
+      dispatch(SETOPEN({open: true}))
+    }
   }
 
   const onDateChange = async (date) => {
@@ -222,7 +228,7 @@ const NewQueue = (props) => {
       </TouchableOpacity>
 
       <Modal
-        visible={toApear}
+        visible={openAdding}
         animationType="slide"
         onRequestClose={() => visi()}
         transparent={true}

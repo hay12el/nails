@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SECTIONS = [
   {
@@ -40,6 +39,7 @@ const initialState = {
     instagram: "https://www.instagram.com/",
     tiktok: "https://www.tiktok.com/en/",
   },
+  openAdding: false
 };
 
 export const propertiesSlice = createSlice({
@@ -62,10 +62,13 @@ export const propertiesSlice = createSlice({
     },
     SETLOADING: (state, action) => {
       state.loading = action.payload.loading;
+    },
+    SETOPEN: (state, action) => {
+      state.openAdding = action.payload.open;
     }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { SETPROPERTIES, SETPHOTOS, SETLINKIM, SETABOUTME, SETLOADING } = propertiesSlice.actions;
+export const { SETPROPERTIES, SETPHOTOS, SETLINKIM, SETABOUTME, SETLOADING, SETOPEN } = propertiesSlice.actions;
 export default propertiesSlice.reducer;

@@ -26,4 +26,19 @@ export const styles = StyleSheet.create({
     left: "40%",
     top: "50%",
   },
+  image: {
+    position: 'absolute',
+    top: 30,
+    zIndex: -1,
+    height: 200,
+    width: "100%",
+    justifyContent: "flex-start",
+  },
+  main: {
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+  },
 });

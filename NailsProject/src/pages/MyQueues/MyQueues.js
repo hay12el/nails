@@ -68,7 +68,7 @@ export default function MyQueues({ navigation }) {
       }}
     >
       <LinearGradient
-        colors={[colors.first, colors.first, colors.second]}
+        colors={[colors.forth, colors.forth, colors.forth]}
         locations={[0.0, 0.7, 1.0]}
         style={styles.linearGradient}
       >
@@ -76,7 +76,7 @@ export default function MyQueues({ navigation }) {
           source={require("../../../assets/2.png")}
           style={{ height: 80, width: 70 }}
         ></Image>
-        <Text style={{ fontSize: 30, color: "#364F6B" }}>התורים שלך:</Text>
+        <Text style={{ fontSize: 30, color: "white" }}>התורים שלך:</Text>
       </LinearGradient>
 
       <View

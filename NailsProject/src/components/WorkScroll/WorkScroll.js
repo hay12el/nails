@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import colors from "../../styles/colors";
 
 const WorkScroll = () => {
-  const photos = useSelector(state => state.properties.photos)
+  const photos = useSelector((state) => state.properties.photos);
   return (
     // <View style={{ width: "100%", alignItems: "center", marginVertical: 20, position: 'relative' }}>
     <View
@@ -17,14 +17,11 @@ const WorkScroll = () => {
         width: "100%",
         alignItems: "center",
         position: "relative",
-        backgroundColor: 'white',
+        backgroundColor: colors.first,
         paddingVertical: 30,
+        marginTop: 0,
       }}
     >
-      {/* <Title text={"העבודות שלי"} /> */}
-      {/* <View style={{width: '100%', paddingBottom: 15}}>
-        <LittleTitle text={"העבודות שלי"} />
-      </View> */}
       <View
         style={{
           width: "100%",
@@ -37,7 +34,6 @@ const WorkScroll = () => {
         <Text style={{ color: colors.text, fontSize: 16, fontWeight: "600" }}>
           העבודות שלי
         </Text>
-        {/* <LittleTitle text={"העבודות שלי"} /> */}
       </View>
       <View style={styles.FLView}>
         <FlatList
@@ -83,7 +79,7 @@ const ListItem = ({ item }) => {
           style={styles.itemPhoto}
           resizeMode="cover"
         />
-        <View
+        {/* <View
           style={{
             justifyContent: "center",
             borderBottomLeftRadius: 10,
@@ -93,17 +89,17 @@ const ListItem = ({ item }) => {
             width: "100%",
           }}
         >
-          <Text
-            style={{
-              textAlign: "center",
-              fontWeight: "bold",
-              color: colors.text,
-            }}
-          >
-            {item.text}
-          </Text>
-        </View>
+      </View> */}
       </Pressable>
+      <Text
+        style={{
+          textAlign: "center",
+          fontWeight: "bold",
+          color: colors.text,
+        }}
+      >
+        {item.text}
+      </Text>
       <Overlay isVisible={open} overlayStyle={{ padding: 0 }}>
         <View
           style={{

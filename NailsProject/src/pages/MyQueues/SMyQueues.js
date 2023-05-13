@@ -2,12 +2,12 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   linearGradient: {
-    height: 180,
+    height: 120,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    borderBottomRightRadius: 15,
-    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20,
   },
   linearGradientIOS: {
     height: 180,

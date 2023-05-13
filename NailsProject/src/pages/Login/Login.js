@@ -1,6 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import API from "../../api/api";
-import React, { useEffect } from "react";
+import React from "react";
+import {  ScrollView, Animated, ImageBackground, Text } from "react-native";
+import image from "../../../assets/kkaa.jpeg";
 import { Formik } from "formik";
 import { LinearGradient } from "expo-linear-gradient";
 import { useDispatch, useSelector } from "react-redux";
@@ -76,48 +78,68 @@ const Login = ({ navigation }) => {
       <StatusBar style="dark" />
       <InnerContainer>
         <Header />
-        <Formik initialValues={{ email: "", password: "" }} onSubmit={LOgin}>
-          {({ handleChange, handleBlur, handleSubmit, values }) => (
-            <StyledFormArea>
-              <MyTextInput
-                label="כתובת מייל"
-                icon="mail"
-                placeholder="אימייל"
-                placeholderTextColor={derLight}
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                value={values.email}
-                keboardType="email-address"
-              />
-              <MyTextInput
-                label="סיסמא"
-                icon="lock"
-                placeholder="סיסמא"
-                placeholderTextColor={derLight}
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-                value={values.password}
-                secureTextEntry={hidePassword}
-                isPassword={true}
-                hidePassword={hidePassword}
-                setHidePassword={setHidePassword}
-              />
-              <StyledButton onPress={handleSubmit}>
-                <ButtonText>התחברי</ButtonText>
-              </StyledButton>
-              <Line />
+        <View style={styles.main}>
+          <ImageBackground
+            source={image}
+            resizeMode="cover"
+            style={styles.image}
+          ></ImageBackground>
 
-              <ExtraView style={{ direction: "rtl" }}>
-                <ExtraText>עוד לא נרשמת?</ExtraText>
-                <TextLinkContent onPress={() => navigation.navigate("SignUp")}>
-                  {" "}
-                  הירשמי{" "}
-                </TextLinkContent>
-                <TextLink></TextLink>
-              </ExtraView>
-            </StyledFormArea>
-          )}
-        </Formik>
+          <Animated.ScrollView
+            style={{ width: "100%" }}
+          >
+            <View style={{ paddingTop: 200, width: "100%",display: 'flex',justifyContent: 'center', alignItems: 'center' }}>
+              <Formik
+                initialValues={{ email: "", password: "" }}
+                onSubmit={LOgin}
+              >
+                {({ handleChange, handleBlur, handleSubmit, values }) => (
+                  <StyledFormArea>
+                    <MyTextInput
+                      label="כתובת מייל"
+                      icon="mail"
+                      placeholder="אימייל"
+                      placeholderTextColor={derLight}
+                      onChangeText={handleChange("email")}
+                      onBlur={handleBlur("email")}
+                      value={values.email}
+                      keboardType="email-address"
+                    />
+                    <MyTextInput
+                      label="סיסמא"
+                      icon="lock"
+                      placeholder="סיסמא"
+                      placeholderTextColor={derLight}
+                      onChangeText={handleChange("password")}
+                      onBlur={handleBlur("password")}
+                      value={values.password}
+                      secureTextEntry={hidePassword}
+                      isPassword={true}
+                      hidePassword={hidePassword}
+                      setHidePassword={setHidePassword}
+                    />
+                    <StyledButton onPress={handleSubmit}>
+                      <ButtonText>התחברי</ButtonText>
+                    </StyledButton>
+                    <Line />
+
+                    <ExtraView style={{ direction: "rtl" }}>
+                      <ExtraText>עוד לא נרשמת?</ExtraText>
+                      <TextLinkContent
+                        onPress={() => navigation.navigate("SignUp")}
+                      >
+                        {" "}
+                        הירשמי{" "}
+                      </TextLinkContent>
+                      <TextLink></TextLink>
+                    </ExtraView>
+                  </StyledFormArea>
+                )}
+              </Formik>
+            </View>
+          </Animated.ScrollView>
+        </View>
+
         <ActivityIndicator
           style={styles.loading}
           size="large"

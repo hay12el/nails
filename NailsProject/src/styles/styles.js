@@ -29,6 +29,7 @@ const StatusBarHeight = Constants.statusBarHeight;
     justify-content: center;
     flex: 1;
     width: 100%;
+    backgroundColor: 'white';
     align-items: center;
  `;
 

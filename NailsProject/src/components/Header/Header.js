@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Image, Platform, View, Animated } from "react-native";
+import { Image, Platform, View, Animated, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { styles } from "./SHeader";
 import colors from "../../styles/colors";
@@ -76,41 +76,18 @@ const Header = ({scrollA}) => {
   return (
     <Animated.View style={styles.HeaderContainer}>
         <LinearGradient
-          colors={[colors.first, colors.first, colors.second]}
+          colors={[colors.forth, colors.forth, colors.forth]}
           locations={[0.0, 0.85, 1.0]}
           style={styles.linearGradient}
         >
-          <Image
+          <Text style={styles.txt}>NA'AMA NAILS</Text>
+          {/* <Image
             source={require("../../../assets/11.png")}
             style={{ height: 180, width: 180 }}
-          ></Image>
+          ></Image> */}
         </LinearGradient>
     </Animated.View>
   );
 };
 
 export default Header;
-
-// {Platform.OS === "android" ? (
-//   <LinearGradient
-//     colors={[colors.first, colors.first, colors.first]}
-//     locations={[0.0, 0.7, 1.0]}
-//     style={styles.linearGradient}
-//   >
-//     {/* <Image
-//       source={require("../../../assets/11.png")}
-//       style={{ height: 180, width: 180 }}
-//     /> */}
-//   </LinearGradient>
-// ) : (
-//   <LinearGradient
-//     colors={[colors.first, colors.first, colors.second]}
-//     locations={[0.0, 0.7, 1.0]}
-//     style={styles.linearGradientIOS}
-//   >
-//     {/* <Image
-//       source={require("../../../assets/11.png")}
-//       style={{ height: 180, width: 180 }}
-//     ></Image> */}
-//   </LinearGradient>
-// )}

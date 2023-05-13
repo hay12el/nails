@@ -8,7 +8,8 @@ export const styles = StyleSheet.create({
     alignContent: "center",
     position: "absolute",
     bottom: 41,
-    width: "100%",
+    width: "100%"
+
   },
   overover: {
     display: 'flex',
@@ -20,17 +21,11 @@ export const styles = StyleSheet.create({
     direction: "rtl",
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     alignItems: "center",
     backgroundColor: colors.first,
     width: "100%",
     height: 60,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    elevation: 2,
-    paddingHorizontal: 22,
   },
   textStyle: {
     fontSize: 13,
