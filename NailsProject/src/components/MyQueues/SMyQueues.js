@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 2, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
-    elevation: 8,
+    elevation: 3,
     marginVertical: 24,
     height: 45,
   },

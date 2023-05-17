@@ -90,7 +90,7 @@ const MyQueuesQ = (props) => {
         borderRadius: 20,
         padding: 3,
         marginHorizontal: 27,
-        marginTop: 26,
+        marginTop: 35,
         marginBottom: 20,
       }}
     >
@@ -100,7 +100,7 @@ const MyQueuesQ = (props) => {
           height: 50,
           width: 50,
           borderRadius: 100,
-          borderColor: colors.text,
+          borderColor: colors.forth,
           borderWidth: 1,
           justifyContent: "center",
           alignItems: "center",
@@ -109,7 +109,7 @@ const MyQueuesQ = (props) => {
           elevation: 5,
         }}
       >
-        <FontAwesome name="calendar" size={27} color={colors.text} />
+        <FontAwesome name="calendar" size={27} color={colors.forth} />
       </View>
       <View
         style={{
@@ -121,23 +121,23 @@ const MyQueuesQ = (props) => {
           justifyContent: "center",
         }}
       >
-        <Text style={{ textAlign: "right", fontSize: 16 }}>
+        <Text style={{ textAlign: "right", fontSize: 16, color: colors.text }}>
           יום {days[theTime.getDay()]} {theTime.getDate()}/
           {theTime.getMonth() + 1}
         </Text>
         <Text> </Text>
-        <Text style={{ textAlign: "right", fontSize: 16 }}>
+        <Text style={{ textAlign: "right", fontSize: 16, color: colors.text }}>
           בשעות {(hourAsType(theTime.getUTCHours(), props.item.type)).text}
         </Text>
       </View>
 
       <Pressable onPress={() => setDelete(!delete1)}>
         <LinearGradient
-          colors={[colors.first, colors.first, colors.second]}
+          colors={[colors.first, colors.first, colors.fifth]}
           locations={[0.0, 0.5, 1.0]}
           style={[styles.QueueButton]}
         >
-          <Text style={{ fontSize: 14 }}>ביטול התור</Text>
+          <Text style={{ fontSize: 14, color: colors.text }}>ביטול התור</Text>
         </LinearGradient>
       </Pressable>
 

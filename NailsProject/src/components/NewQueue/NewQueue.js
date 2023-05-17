@@ -213,19 +213,19 @@ const NewQueue = (props) => {
         alignContent: "center",
       }}
     >
-      <TouchableOpacity
+      <Pressable
         activeOpacity={0.1}
         onPress={() => visi()}
         style={styles.touchi}
       >
         <LinearGradient
-          colors={[colors.forth, colors.forth, colors.third]}
-          locations={[0.0, 0.5, 1.0]}
+          colors={[colors.fifth, colors.fifth, colors.fifth]}
+          locations={[0.0, 0.6, 1.0]}
           style={styles.linearGradient}
         >
           <FontAwesome name="plus" size={32} color="white" />
         </LinearGradient>
-      </TouchableOpacity>
+      </Pressable>
 
       <Modal
         visible={openAdding}

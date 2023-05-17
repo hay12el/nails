@@ -1,0 +1,41 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+  ManuToggleCont: {
+    display: "flex",
+    flexDirection: "column",
+    direction: "rtl",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    padding: 5,
+    paddingHorizontal: 23,
+    width: 300,
+    height: "105%",
+    backgroundColor: "white",
+    position: "absolute",
+    zIndex: 100,
+    gap: 30,
+    top: 0,
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 5, height: 8 },
+    shadowOpacity: 0.8,
+    shadowRadius: 50,
+    elevation: 3,
+  },
+  pressable: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    height: 50,
+  },
+  upper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 40,
+    width: "100%",
+  },
+});

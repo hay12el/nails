@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Overlay } from "react-native-elements";
-import { View, Text, FlatList, Image, Pressable } from "react-native";
+import { View, Text, FlatList, Image, Pressable, Animated } from "react-native";
 import Title from "../Title/Title";
 import { styles } from "./SWorkScroll";
 import LittleTitle from "../LittleTitle/LittleTitle";
@@ -18,7 +18,7 @@ const WorkScroll = () => {
         alignItems: "center",
         position: "relative",
         backgroundColor: colors.first,
-        paddingVertical: 30,
+        paddingTop: 30,
         marginTop: 0,
       }}
     >
@@ -51,7 +51,23 @@ const WorkScroll = () => {
 export default WorkScroll;
 
 const ListItem = ({ item }) => {
+  const [firstRender, setFirstRender] = useState(0);
   const [open, setOpen] = useState(false);
+  const fadeAnim = new Animated.Value(1);
+
+  useEffect(() => {
+    if (firstRender != 0) {
+      fadeAnim.setValue(0);
+    } else {
+      setFirstRender(1);
+    }
+    Animated.spring(fadeAnim, {
+      toValue: 1,
+      friction: 900,
+      tension: 10,
+      useNativeDriver: false,
+    }).start();
+  }, [open]);
 
   const closeImage = () => {
     if (open != false) {
@@ -79,17 +95,6 @@ const ListItem = ({ item }) => {
           style={styles.itemPhoto}
           resizeMode="cover"
         />
-        {/* <View
-          style={{
-            justifyContent: "center",
-            borderBottomLeftRadius: 10,
-            borderBottomRightRadius: 10,
-            backgroundColor: "white",
-            height: 40,
-            width: "100%",
-          }}
-        >
-      </View> */}
       </Pressable>
       <Text
         style={{
@@ -100,8 +105,18 @@ const ListItem = ({ item }) => {
       >
         {item.text}
       </Text>
-      <Overlay isVisible={open} overlayStyle={{ padding: 0 }}>
-        <View
+      <Overlay
+        isVisible={open}
+        overlayStyle={{
+          padding: 0,
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 15,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {/* <Animated.View
           style={{
             height: 500,
             display: "flex",
@@ -109,18 +124,28 @@ const ListItem = ({ item }) => {
             width: 300,
             borderRadius: 15,
             justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#e5e5e8",
+            backgroundColor: "transparent",
+            opacity: fadeAnim ,
+            borderRadius: 25
           }}
-        >
-          <Image
-            source={{
-              uri: item.uri,
-            }}
-            style={{ height: "100%", width: "100%" }}
-            resizeMode="cover"
-          />
-        </View>
+        > */}
+        <Animated.Image
+          source={{
+            uri: item.uri,
+          }}
+          style={{
+            height: 500,
+            width: 300,
+            position: "absolute",
+            top: fadeAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, -250],
+            }),
+            opacity: fadeAnim,
+          }}
+          resizeMode="cover"
+        />
+        {/* </Animated.View> */}
       </Overlay>
     </View>
   );

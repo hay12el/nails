@@ -3,6 +3,7 @@ import moment from "moment";
 import { IEvent } from "../interfaces/interfaces";
 import Event from "../models/Event";
 import User from "../models/User";
+import mongoose from "mongoose";
 
 export const getDayQueues = async (req: Request, res: Response) => {
   try {
@@ -30,51 +31,61 @@ export const getDayQueues = async (req: Request, res: Response) => {
 
 export const addNewQueue = async (req: Request, res: Response) => {
   let { myAdmin, time, hour, type, to } = req.body;
-
-  var dateObj;
-  if (type == "M") {
-    let strD = time.split(".");
-
-    const TheTime =
-      strD[2] +
-      "-" +
-      (strD[1] < 10 ? 0 + strD[1] : strD[1]) +
-      "-" +
-      (strD[0] < 10 ? 0 + strD[0] : strD[0]) +
-      "T09:00:00.000Z";
-    dateObj = new Date(TheTime).setUTCHours(hour);
-    //@ts-ignore
-    myAdmin = req.userId;
-  } else {
-    dateObj = new Date(time).setUTCHours(hour);
-  }
-
   try {
-    let event;
-    if (type == "G") {
-      const Day = returnDate(time);
+    var dateObj;
 
-      let nextDay = new Date(Day);
-      nextDay.setDate(Day.getDate() + 1);
-
-      const queues = await Event.find({
+    if (type[0] == "M") {
+      const newEvent = {
+        time: new Date(time).setUTCHours(Number(hour)),
+        type: type[1],
+        to: Math.floor(to),
         //@ts-ignore
-        admin: req.userId,
-        time: { $gte: Day, $lt: nextDay },
-      });
+        admin: new mongoose.Types.ObjectId(req.userId),
+        //@ts-ignore
+        connectTo: new mongoose.Types.ObjectId(req.userId),
+      };
 
-      //@ts-ignore
-      const hours = queues.map((x) => new Date(x.time));
-      const hoursToReturn = hours.map((x: Date) => x.getUTCHours());
-      if (
-        hoursToReturn.some((num) => num < hour) ||
-        hoursToReturn.some((num) => num > to)
-      ) {
-        throw "קיימים תורים בתווך, אנא בטלי אותם לפני קביעת שעות הפעילות";
-      } else {
-        event = new Event({
+      const e = new Event(newEvent);
+      await e.save();
+      // console.log(e);
+      res.sendStatus(200);
+    } else {
+      let event;
+      dateObj = new Date(time).setUTCHours(hour);
+      if (type == "G") {
+        const Day = returnDate(time);
+
+        let nextDay = new Date(Day);
+        nextDay.setDate(Day.getDate() + 1);
+
+        const queues = await Event.find({
           //@ts-ignore
           admin: req.userId,
+          time: { $gte: Day, $lt: nextDay },
+        });
+
+        //@ts-ignore
+        const hours = queues.map((x) => new Date(x.time));
+        const hoursToReturn = hours.map((x: Date) => x.getUTCHours());
+        if (
+          hoursToReturn.some((num) => num < hour) ||
+          hoursToReturn.some((num) => num > to)
+        ) {
+          throw "קיימים תורים בתווך, אנא בטלי אותם לפני קביעת שעות הפעילות";
+        } else {
+          event = new Event({
+            //@ts-ignore
+            admin: req.userId,
+            time: new Date(dateObj),
+            //@ts-ignore
+            connectTo: req.userId,
+            to: to,
+            type: type,
+          });
+        }
+      } else {
+        event = new Event({
+          admin: myAdmin,
           time: new Date(dateObj),
           //@ts-ignore
           connectTo: req.userId,
@@ -82,29 +93,21 @@ export const addNewQueue = async (req: Request, res: Response) => {
           type: type,
         });
       }
-    } else {
-      event = new Event({
-        admin: myAdmin,
-        time: new Date(dateObj),
+
+      //save the new Event to database
+      await event.save();
+
+      const afterUpdate = await User.findOneAndUpdate(
         //@ts-ignore
-        connectTo: req.userId,
-        to: to,
-        type: type,
-      });
+        { _id: req.userId },
+        { $push: { queues: event } }
+      );
+      res.send(afterUpdate?.queues).status(200);
     }
-
-    //save the new Event to database
-    await event.save();
-
-    const afterUpdate = await User.findOneAndUpdate(
-      //@ts-ignore
-      { _id: req.userId },
-      { $push: { queues: event } }
-    );
-
-    res.send(afterUpdate?.queues).status(200);
   } catch (err) {
     //@ts-ignore
+    console.log(err);
+
     res.status(404).send(err);
   }
 };
@@ -154,7 +157,6 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
     const Day = returnDate(req.query.date);
     let nextDay = new Date(Day);
     nextDay.setDate(Day.getDate() + 1);
-
     const queues = await Event.find({
       //@ts-ignore
       admin: req.userId,
@@ -164,7 +166,6 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
     const users = await User.find({ _id: { $in: usersId } }).select(
       "username phone email isAdmin"
     );
-
     // Add limit hours of the day
     if (!queues.some((e) => e.type == "G")) {
       //@ts-ignore
@@ -185,10 +186,8 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
         type: "M",
       });
     }
-
     //Remove Linit Hours
     const ho = queues.filter((x) => x.type != "G");
-
     //Sort By Hours
     ho.sort((a, b) => {
       //@ts-ignore
@@ -199,7 +198,7 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
       ho[1] = ho[0];
       ho[0] = temp;
     }
-
+    
     const objectToReturn = {};
     let LST = [];
     //Go through all the queues
@@ -217,7 +216,8 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
             //@ts-ignore
             hour: ho[i + 1].time.getHours(),
             type: ho[i + 1].type,
-          }
+          },
+          false
         ) >= 1
       ) {
         let objType;
@@ -231,7 +231,6 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
         } else {
           objType = "B";
         }
-
         //@ts-ignore
         let newObj = {
           //@ts-ignore
@@ -260,77 +259,124 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
         let user = users.find(
           (us) => us._id.toString() == ho[i].connectTo.toString()
         );
-
-        let newObj = {
-          user: {
-            userId: user?._id,
-            username: user?.username,
-            email: user?.email,
-            phone: user?.phone,
-            isAdmin: user?.isAdmin,
-          },
-          postId: ho[i]._id,
-          time: ho[i].time,
-          type: ho[i].type,
-          //@ts-ignore
-          hour: ho[i].time.getHours() - 3,
-          iscatched: true,
-        };
-        if (
-          i < ho.length - 1 &&
-          //@ts-ignore
-          calcGapForAdmin(
-            {
-              //@ts-ignore
-              hour: ho[i].time.getHours(),
-              type: ho[i].type,
+        let newObj;
+        if (user?.isAdmin) {
+          /// The user is Admin
+          newObj = {
+            user: {
+              userId: user?._id,
+              username: user?.username,
+              email: user?.email,
+              phone: user?.phone,
+              isAdmin: user?.isAdmin,
             },
-            {
-              //@ts-ignore
-              hour: ho[i + 1].time.getHours(),
-              type: ho[i + 1].type,
-            }
-          ) != 0
-        ) {
-          let objType;
-          // the last appointment
-          if (ho[i + 1].type == "M") {
-            if (ho[i].type == "A" || ho[i].type == "D" || ho[i].type == "F") {
-              objType = "A";
-            } else {
-              objType = "C";
-            }
-          }
-          // Gap between two appoinments
-          else if (
-            ho[i].type == "A" ||
-            ho[i].type == "D" ||
-            ho[i].type == "F"
+            postId: ho[i]._id,
+            time: ho[i].time,
+            type: ho[i].type,
+            to: ho[i].to,
+            //@ts-ignore
+            hour: ho[i].time.getHours() - 3,
+            iscatched: true,
+          };
+          if (
+            i < ho.length - 1 &&
+            //@ts-ignore
+            calcGapForAdmin(
+              {
+                //@ts-ignore
+                hour: Number(ho[i].to),
+                type: ho[i].type,
+              },
+              {
+                //@ts-ignore
+                hour: ho[i + 1].time.getHours(),
+                type: ho[i + 1].type,
+              }, true
+            ) != 0
           ) {
-            if (
-              ho[i + 1].type == "A" ||
-              ho[i + 1].type == "C" ||
-              ho[i + 1].type == "E"
-            ) {
-              // start and end round hour
-              objType = "A";
-            } else {
-              objType = "B";
+            /// There is Gap
+            let objType;
+            // the last appointment
+            if (ho[i + 1].type == "M") {
+              
+              if (ho[i].type == "A" || ho[i].type == "D" || ho[i].type == "F") {
+                objType = "A";
+              } else {
+                objType = "C";
+              }
             }
-          } else {
-            if (
-              ho[i + 1].type == "A" ||
-              ho[i + 1].type == "C" ||
-              ho[i + 1].type == "E"
+            // Gap between two appoinments
+            else if (
+              ho[i].type == "A" ||
+              ho[i].type == "D" ||
+              ho[i].type == "F"
             ) {
-              objType = "C";
+              if (
+                ho[i + 1].type == "A" ||
+                ho[i + 1].type == "C" ||
+                ho[i + 1].type == "E"
+              ) {
+                // start and end round hour
+                objType = "A";
+              } else {
+                objType = "B";
+              }
             } else {
-              objType = "D";
+              if (
+                ho[i + 1].type == "A" ||
+                ho[i + 1].type == "C" ||
+                ho[i + 1].type == "E"
+              ) {
+                objType = "C";
+              } else {
+                objType = "D";
+              }
             }
+            //@ts-ignore            
+            let newObjj = {
+              time: ho[i + 1].time,
+              gap: calcGapForAdmin(
+                {
+                  //@ts-ignore
+                  hour: Number(ho[i].to),
+                  type: ho[i].type,
+                },
+                {
+                  //@ts-ignore
+                  hour: ho[i + 1].time.getHours()-3,
+                  type: ho[i + 1].type,
+                },
+                true
+              ),
+              iscatched: false,
+              type: objType,
+              //@ts-ignore
+              hour: Number(newObj.to),
+            };
+
+            LST.push(newObjj);
           }
-          let newObjj = {
-            time: ho[i + 1].time,
-            gap: calcGapForAdmin(
+        } else {
+          /// regualr user
+          newObj = {
+            user: {
+              userId: user?._id,
+              username: user?.username,
+              email: user?.email,
+              phone: user?.phone,
+              isAdmin: user?.isAdmin,
+            },
+            postId: ho[i]._id,
+            time: ho[i].time,
+            type: ho[i].type,
+            //@ts-ignore
+            hour: ho[i].time.getHours() - 3,
+            iscatched: true,
+          };
+          if (
+            i < ho.length - 1 &&
+            //@ts-ignore
+            calcGapForAdmin(
               {
                 //@ts-ignore
                 hour: ho[i].time.getHours(),
@@ -341,21 +387,70 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
                 hour: ho[i + 1].time.getHours(),
                 type: ho[i + 1].type,
               }
-            ),
-            iscatched: false,
-
-            type: objType,
-            //@ts-ignore
-            hour: gapType(ho[i].time.getHours() - 3, ho[i].type),
-          };
-
-          LST.push(newObjj);
+            ) != 0
+          ) {
+            let objType;
+            // the last appointment
+            if (ho[i + 1].type == "M") {
+              if (ho[i].type == "A" || ho[i].type == "D" || ho[i].type == "F") {
+                objType = "A";
+              } else {
+                objType = "C";
+              }
+            }
+            // Gap between two appoinments
+            else if (
+              ho[i].type == "A" ||
+              ho[i].type == "D" ||
+              ho[i].type == "F"
+            ) {
+              if (
+                ho[i + 1].type == "A" ||
+                ho[i + 1].type == "C" ||
+                ho[i + 1].type == "E"
+              ) {
+                // start and end round hour
+                objType = "A";
+              } else {
+                objType = "B";
+              }
+            } else {
+              if (
+                ho[i + 1].type == "A" ||
+                ho[i + 1].type == "C" ||
+                ho[i + 1].type == "E"
+              ) {
+                objType = "C";
+              } else {
+                objType = "D";
+              }
+            }
+            let newObjj = {
+              time: ho[i + 1].time,
+              gap: calcGapForAdmin(
+                {
+                  //@ts-ignore
+                  hour: ho[i].time.getHours(),
+                  type: ho[i].type,
+                },
+                {
+                  //@ts-ignore
+                  hour: ho[i + 1].time.getHours(),
+                  type: ho[i + 1].type,
+                },
+                false
+              ),
+              iscatched: false,
+              type: objType,
+              //@ts-ignore
+              hour: gapType(ho[i].time.getHours() - 3, ho[i].type),
+            };
+            LST.push(newObjj);
+          }
         }
-
         LST.push(newObj);
       }
     }
-
     LST.sort(function (a, b) {
       //@ts-ignore
       return new Date(a.time) - new Date(b.time);
@@ -389,7 +484,7 @@ export const AdminDeleteQueue = async (req: Request, res: Response) => {
   }
 };
 
-// Work good!
+// Works good!
 export const getAvailableHours = async (req: Request, res: Response) => {
   //@ts-ignore
   const Day = returnDate(req.query.date);
@@ -512,8 +607,7 @@ function getQueueGaps(sortedQueues: any) {
   return gaps;
 }
 
-//@ts-ignore
-const gapType = (hour, type) => {
+const gapType = (hour: number, type: string) => {
   if (type == "D") {
     return hour + 2;
   } else if (type == "E") {
@@ -524,7 +618,7 @@ const gapType = (hour, type) => {
 };
 
 //@ts-ignore
-const calcGapForAdmin = (currentQueue, nextQueue) => {
+const calcGapForAdmin = (currentQueue, nextQueue, isAdmin) => {
   let gap = 0;
   // Calculate the gap between the current queue and the next queue
   if (currentQueue.type == "M") {
@@ -537,15 +631,24 @@ const calcGapForAdmin = (currentQueue, nextQueue) => {
         : 0) -
       currentQueue.hour;
   } else if (nextQueue.type == "M") {
-    gap =
-      nextQueue.hour -
-      (currentQueue.hour +
-        (currentQueue.type === "C" || currentQueue.type === "D" ? 1 : 0) +
-        (currentQueue.type === "E" ||
-        currentQueue.type === "F" ||
-        currentQueue.type === "B"
-          ? 0.5
-          : 0));
+    if (isAdmin) {
+      //Here currentQueue is the end of the cancled queue.
+      gap =
+        nextQueue.hour -
+        (currentQueue.hour +
+          (currentQueue.type === "C" || currentQueue.type === "B" ? 0.5 : 0));
+        
+    } else {
+      gap =
+        nextQueue.hour -
+        (currentQueue.hour +
+          (currentQueue.type === "C" || currentQueue.type === "D" ? 1 : 0) +
+          (currentQueue.type === "E" ||
+          currentQueue.type === "F" ||
+          currentQueue.type === "B"
+            ? 0.5
+            : 0));
+    }
   } else {
     gap =
       nextQueue.hour +

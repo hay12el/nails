@@ -9,6 +9,13 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
     borderBottomLeftRadius: 20,
   },
+  overover: {
+    display: 'flex',
+    position: 'absolute',
+    right: 40,
+    bottom: 60,
+    zIndex: 60,
+  },
   linearGradientIOS: {
     height: 180,
     display: "flex",

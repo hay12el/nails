@@ -10,11 +10,15 @@ import {
   Platform,
 } from "react-native";
 import Constants from "expo-constants";
+import Header from "../../components/Header/Header";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
 import { styles } from "./SMyQueues";
 import API from "../../api/api";
 import colors from "../../styles/colors";
+import NewQueue from "../../components/NewQueue/NewQueue";
+import ManuToggle from '../../components/ManuToggle/ManuToggle'
+import { StatusBar } from "expo-status-bar";
 
 const StatusBarHeight = Constants.statusBarHeight;
 
@@ -67,23 +71,14 @@ export default function MyQueues({ navigation }) {
         backgroundColor: "white",
       }}
     >
-      <LinearGradient
-        colors={[colors.forth, colors.forth, colors.forth]}
-        locations={[0.0, 0.7, 1.0]}
-        style={styles.linearGradient}
-      >
-        <Image
-          source={require("../../../assets/2.png")}
-          style={{ height: 80, width: 70 }}
-        ></Image>
-        <Text style={{ fontSize: 30, color: "white" }}>התורים שלך:</Text>
-      </LinearGradient>
+      <StatusBar style="light" backgroundColor={colors.forth} />
+      <ManuToggle />
+      <Header />
 
       <View
         style={{
           height: "100%",
           backgroundColor: "white",
-          paddingBottom: 50,
           width: "100%",
         }}
       >
@@ -101,7 +96,7 @@ export default function MyQueues({ navigation }) {
             </Text>
           </View>
         ) : (
-          <View style={{ marginBottom: 30, paddingTop: 10, height:'69%' }}>
+          <View style={{ paddingTop: 60,paddingBottom: 40, height: "100%"  }}>
             <FlatList
               data={queues}
               renderItem={({ item }) => (
@@ -118,9 +113,9 @@ export default function MyQueues({ navigation }) {
         color="#0000ff"
         animating={thinking}
       />
-      {/* <View style={{ display: "flex", backgroundColor: "black", height: 20 }}> */}
-        <NavBar rreload={rreload} />
-      {/* </View> */}
+      <View style={styles.overover}>
+        <NewQueue rreload={rreload} />
+      </View>
     </View>
   );
 }

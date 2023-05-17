@@ -16,9 +16,25 @@ const AboutMe = ({ open }) => {
   const [firstRender, setFirstRender] = useState(0);
   const dispatch = useDispatch();
   const fadeAnim = new Animated.Value(1);
+  const scaleImg = new Animated.Value(1);
 
   const openModel = () => {
     dispatch(SETOPEN({ open: true }));
+  };
+
+  const handleAnim = () => {
+    Animated.sequence([
+      Animated.timing(scaleImg, {
+        toValue: 1.1,
+        duration: 100,
+        useNativeDriver: false,
+      }),
+      Animated.timing(scaleImg, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: false,
+      }),
+    ]).start();
   };
 
   useEffect(() => {
@@ -42,8 +58,14 @@ const AboutMe = ({ open }) => {
         width: "100%",
         justifyContent: "center",
         alignItems: "center",
-        borderTopLeftRadius: 50,
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
         marginBottom: 0,
+        shadowColor: "#000",
+        shadowOffset: { width: 2, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 2,
       }}
     >
       <View style={styles.massageStyle}>
@@ -74,13 +96,10 @@ const AboutMe = ({ open }) => {
               direction: "rtl",
             }}
           >
-            , שמחים שחזרת
+            , שמחה שחזרת
           </Text>
         </View>
-        <Pressable
-          style={[styles.QueueButton]}
-          onPress={() => openModel()}
-        >
+        <Pressable style={[styles.QueueButton]} onPress={() => openModel()}>
           <Text style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>
             לחצי לקביעת תור
           </Text>
@@ -95,18 +114,24 @@ const AboutMe = ({ open }) => {
           }}
         >
           {!about ? (
-            <Animated.Image
-              style={{
-                height: "100%",
-                width: "100%",
-                resizeMode: "cover",
-                borderRadius: 30,
-                opacity: fadeAnim,
-              }}
-              source={{
-                uri: "https://images.fresha.com/locations/location-profile-images/286009/597600/2ba259a7-b0ee-486d-a9ba-c0b7fcc3066f.jpg?class=venue-gallery-large",
-              }}
-            />
+            <Pressable
+              onPress={handleAnim}
+              style={{ height: "100%", width: "100%" }}
+            >
+              <Animated.Image
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  resizeMode: "cover",
+                  borderRadius: 30,
+                  opacity: fadeAnim,
+                  transform: [{ scale: scaleImg }],
+                }}
+                source={{
+                  uri: "https://images.fresha.com/locations/location-profile-images/286009/597600/2ba259a7-b0ee-486d-a9ba-c0b7fcc3066f.jpg?class=venue-gallery-large",
+                }}
+              />
+            </Pressable>
           ) : (
             <Animated.View
               style={{
@@ -114,17 +139,22 @@ const AboutMe = ({ open }) => {
                 width: "100%",
                 resizeMode: "cover",
                 borderRadius: 30,
-                backgroundColor: colors.second,
+                backgroundColor: colors.first,
+                shadowColor: "#000",
+                shadowOffset: { width: 2, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 6,
+                elevation: 2,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                opacity: fadeAnim,
+                // opacity: fadeAnim,
               }}
             >
               <Animated.Text
                 style={{
                   color: colors.text,
-                  fontSize: 17,
+                  fontSize: 15,
                   textAlign: "center",
                   position: "absolute",
                   top: fadeAnim.interpolate({

@@ -19,11 +19,28 @@ export const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderColor: "#0000ff",
   },
+  overover: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    left: 20,
+    bottom: 60,
+    zIndex: 60,
+    height: 60,
+    width: 60,
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+    backgroundColor: 'white',
+    borderRadius: 100
+  },
   container1: {
     backgroundColor: "black",
     height: "100%",
     width: '100%',
-    paddingBottom: 100
   },
   loading: {
     position: "absolute",

@@ -20,7 +20,6 @@ export const styles = StyleSheet.create({
     borderRadius: 9,
     marginHorizontal: 10,
     borderRadius: 25,
-
   },
   itemPhoto: {
     width: 170,

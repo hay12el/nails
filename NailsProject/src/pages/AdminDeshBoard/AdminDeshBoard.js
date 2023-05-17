@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  Pressable,
 } from "react-native";
 import { styles } from "./SAdminDeshBoard";
 import { Overlay } from "react-native-elements";
@@ -20,8 +21,11 @@ import { Agenda, LocaleConfig } from "react-native-calendars";
 import Queue from "../../components/QueueA/Queue";
 import NavBar from "../../components/NavBar/NavBar";
 import API from "../../api/api";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import colors from "../../styles/colors";
 
-export default function Admin_pannel({ navigation }) {
+export default function Admin_pannel() {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [thinking, setThinking] = useState(false);
@@ -88,8 +92,7 @@ export default function Admin_pannel({ navigation }) {
     setSelectedDate(a);
   };
 
-  const renderItem = ( item ) => {
-    
+  const renderItem = (item) => {
     return (
       <Queue
         item={item}
@@ -105,11 +108,12 @@ export default function Admin_pannel({ navigation }) {
   const renderEmptyDate = () => {
     return (
       <View style={styles.emptyDate}>
-        <Text style={{fontSize: 16,fontWeight: '700'}}>אין תורים ביום זה</Text>
+        <Text style={{ fontSize: 16, fontWeight: "700" }}>
+          אין תורים ביום זה
+        </Text>
       </View>
     );
   };
-  
 
   const rowHasChanged = (r1, r2) => {
     return r1.name !== r2.name;
@@ -146,6 +150,7 @@ export default function Admin_pannel({ navigation }) {
       setSuccess(false);
     }, 3300);
   };
+  const navigation = useNavigation();
 
   return (
     <View
@@ -184,10 +189,12 @@ export default function Admin_pannel({ navigation }) {
           showOnlySelectedDayItems={true}
         />
       </View>
-
-      <View style={styles.menuNavigator}>
-        <NavBar />
-      </View>
+      <Pressable
+        style={styles.overover}
+        onPress={() => navigation.navigate("HomePage")}
+      >
+        <Ionicons name="arrow-back-sharp" size={22} color={colors.text} />
+      </Pressable>
       <ActivityIndicator
         style={styles.loading}
         size="large"

@@ -11,9 +11,15 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingTop: 47,
-    paddingBottom: 100,
+    // paddingBottom: 100,
   },
-
+  overover: {
+    display: 'flex',
+    position: 'absolute',
+    right: 40,
+    bottom: 60,
+    zIndex: 60,
+  },
   image: {
     position: 'absolute',
     zIndex: -1,

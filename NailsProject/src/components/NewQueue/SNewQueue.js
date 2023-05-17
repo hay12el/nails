@@ -5,10 +5,9 @@ export const styles = StyleSheet.create({
   linearGradient: {
     elevation: 4,
     margin: 0,
-    backgroundColor: "#9b97c4",
     borderRadius: 100,
-    height: 65,
-    width: 65,
+    height: 60,
+    width: 60,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -36,7 +35,6 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 10,
-    
   },
   touchiIOS: {
     borderRadius: 100,

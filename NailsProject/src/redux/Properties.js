@@ -39,7 +39,8 @@ const initialState = {
     instagram: "https://www.instagram.com/",
     tiktok: "https://www.tiktok.com/en/",
   },
-  openAdding: false
+  openAdding: false,
+  openMenu: false
 };
 
 export const propertiesSlice = createSlice({
@@ -65,10 +66,13 @@ export const propertiesSlice = createSlice({
     },
     SETOPEN: (state, action) => {
       state.openAdding = action.payload.open;
+    },
+    SETOPENMENU: (state, action) => {
+      state.openMenu = action.payload.open;
     }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { SETPROPERTIES, SETPHOTOS, SETLINKIM, SETABOUTME, SETLOADING, SETOPEN } = propertiesSlice.actions;
+export const { SETPROPERTIES, SETPHOTOS, SETLINKIM, SETABOUTME, SETLOADING, SETOPEN, SETOPENMENU } = propertiesSlice.actions;
 export default propertiesSlice.reducer;

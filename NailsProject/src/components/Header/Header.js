@@ -1,91 +1,57 @@
 import React, { useEffect } from "react";
-import { Image, Platform, View, Animated, Text } from "react-native";
+import { Image, Platform, View, Animated, Text, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { styles } from "./SHeader";
 import colors from "../../styles/colors";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  Ionicons,
+  Feather,
+  //@ts-ignore
+} from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { SETOPENMENU } from "../../redux/Properties";
 
-const Header = ({scrollA}) => {
-  // const BANNER_H = 350;
-  // const TOPNAVI_H = 50;
-  // useEffect(() => {
-  //   console.log(scrollA);
-  // }, [scrollA]);
+const Header = () => {
+  const dispatch = useDispatch();
+  const route = useRoute();
+  const navigation = useNavigation();
+  const open = useSelector((state) => state.properties.openMenu);
 
-  // const styles = {
-  //   // HeaderContainer: {
-  //   //   position: "absolute",
-  //   //   top: 0,
-  //   //   zIndex: 10,
-  //   //   display: "flex",
-  //   //   justifyContent: "center",
-  //   //   alignItems: "center",
-  //   //   width: "100%",
-  //   // },
-  //   HeaderContainer: (scrollA) => ({
-  //     height: BANNER_H,
-  //     width: "200%",
-  //     transform: [
-  //       {
-  //         translateY: scrollA.interpolate({
-  //           inputRange: [-BANNER_H, 0, BANNER_H, BANNER_H + 1],
-  //           outputRange: [-BANNER_H / 2, 0, BANNER_H * 0.75, BANNER_H * 0.75],
-  //         }),
-  //       },
-  //       {
-  //         scale: scrollA.interpolate({
-  //           inputRange: [-BANNER_H, 0, BANNER_H, BANNER_H + 1],
-  //           outputRange: [2, 1, 0.5, 0.5],
-  //         }),
-  //       },
-  //     ],
-  //   }),
+  const openMenu = () => {
+    dispatch(SETOPENMENU({ open: !open }));
+  };
 
-  //   // linearGradientIOS: {
-  //   //   height: 60,
-  //   //   display: "flex",
-  //   //   justifyContent: "center",
-  //   //   alignItems: "center",
-  //   //   width: "100%",
-  //   // },
-  //   // linearGradient: {
-  //   //   elevation: 8,
-  //   //   height: 60,
-  //   //   display: "flex",
-  //   //   justifyContent: "center",
-  //   //   alignItems: "center",
-  //   //   width: "100%",
-  //   // },
-  //   linearGradient: {
-  //     height: 180,
-  //     width: "100%",
-  //     display: "flex",
-  //     justifyContent: "center",
-  //     alignItems: "center",
-  //     borderBottomRightRadius: 25,
-  //     borderBottomLeftRadius: 25,
-  //   },
-  //   linearGradientIOS: {
-  //     height: 180,
-  //     width: "100%",
-  //     display: "flex",
-  //     justifyContent: "center",
-  //     alignItems: "center",
-  //     borderRadius: 25,
-  //   },
-  // };
   return (
     <Animated.View style={styles.HeaderContainer}>
-        <LinearGradient
-          colors={[colors.forth, colors.forth, colors.forth]}
-          locations={[0.0, 0.85, 1.0]}
-          style={styles.linearGradient}
-        >
-          <Text style={styles.txt}>NA'AMA NAILS</Text>
-          {/* <Image
+      <LinearGradient
+        colors={[colors.forth, colors.forth, colors.forth]}
+        locations={[0.0, 0.85, 1.0]}
+        style={styles.linearGradient}
+      >
+        <Pressable style={styles.menu} onPress={openMenu}>
+          <Feather name="menu" size={22} color={colors.first} />
+        </Pressable>
+        {route.name == "MyQueues" && (
+          <Pressable
+            style={styles.Arrow}
+            onPress={() => navigation.navigate("HomePage")}
+          >
+            <Text style={{ fontSize: 23, fontWeight: 600, color: "white" }}>
+              <Ionicons
+                name="arrow-back-sharp"
+                size={22}
+                color={colors.first}
+              />
+            </Text>
+          </Pressable>
+        )}
+        <Text style={styles.txt}>NA'AMA NAILS</Text>
+        {/* <Image
             source={require("../../../assets/11.png")}
             style={{ height: 180, width: 180 }}
           ></Image> */}
-        </LinearGradient>
+      </LinearGradient>
     </Animated.View>
   );
 };

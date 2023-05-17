@@ -9,10 +9,22 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    backgroundColor: "green",
     borderBottomRightRadius: 20,
     borderBottomLeftRadius: 20,
     height: 60,
+  },
+  Arrow: {
+    position: 'absolute',
+    right: 28
+  },
+  menu: {
+    height: '100%',
+    width: 40,
+    display: 'flex',
+    alignItems:'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    left: 28
   },
   txt: {
     fontSize: 25,

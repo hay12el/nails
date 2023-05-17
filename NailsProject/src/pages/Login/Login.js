@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import API from "../../api/api";
 import React from "react";
 import {  ScrollView, Animated, ImageBackground, Text } from "react-native";
-import image from "../../../assets/kkaa.jpeg";
+import image from "../../../assets/kkaa.png";
 import { Formik } from "formik";
 import { LinearGradient } from "expo-linear-gradient";
 import { useDispatch, useSelector } from "react-redux";
