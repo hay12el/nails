@@ -198,7 +198,11 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
       ho[1] = ho[0];
       ho[0] = temp;
     }
-    
+    console.error("vdfdf");
+
+    console.log(ho);
+    console.error();
+
     const objectToReturn = {};
     let LST = [];
     //Go through all the queues
@@ -289,16 +293,16 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
               },
               {
                 //@ts-ignore
-                hour: ho[i + 1].time.getHours(),
+                hour: ho[i + 1].time.getHours() - 3,
                 type: ho[i + 1].type,
-              }, true
+              },
+              true
             ) != 0
           ) {
             /// There is Gap
             let objType;
             // the last appointment
             if (ho[i + 1].type == "M") {
-              
               if (ho[i].type == "A" || ho[i].type == "D" || ho[i].type == "F") {
                 objType = "A";
               } else {
@@ -332,7 +336,7 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
                 objType = "D";
               }
             }
-            //@ts-ignore            
+            //@ts-ignore
             let newObjj = {
               time: ho[i + 1].time,
               gap: calcGapForAdmin(
@@ -343,7 +347,7 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
                 },
                 {
                   //@ts-ignore
-                  hour: ho[i + 1].time.getHours()-3,
+                  hour: ho[i + 1].time.getHours() - 3,
                   type: ho[i + 1].type,
                 },
                 true
@@ -353,6 +357,8 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
               //@ts-ignore
               hour: Number(newObj.to),
             };
+            console.log(newObjj);
+            
 
             LST.push(newObjj);
           }
@@ -637,7 +643,6 @@ const calcGapForAdmin = (currentQueue, nextQueue, isAdmin) => {
         nextQueue.hour -
         (currentQueue.hour +
           (currentQueue.type === "C" || currentQueue.type === "B" ? 0.5 : 0));
-        
     } else {
       gap =
         nextQueue.hour -
@@ -650,21 +655,37 @@ const calcGapForAdmin = (currentQueue, nextQueue, isAdmin) => {
             : 0));
     }
   } else {
-    gap =
-      nextQueue.hour +
-      (nextQueue.type === "F" ||
-      nextQueue.type === "D" ||
-      nextQueue.type === "B"
-        ? 0.5
-        : 0) -
-      (currentQueue.hour +
-        (currentQueue.type == "E" ? 0 : 1) +
-        (currentQueue.type == "C" ||
-        currentQueue.type == "E" ||
-        currentQueue.type == "B"
+    if (isAdmin) {
+      console.log();
+      console.log(currentQueue, nextQueue);
+
+      //Here currentQueue is the end of the cancled queue.
+      gap =
+        nextQueue.hour +
+        (nextQueue.type == "B" || nextQueue.type == "D" || nextQueue.type == "F"
           ? 0.5
-          : 0) +
-        (currentQueue.type == "D" && +0.5));
+          : 0) -
+        (currentQueue.hour +
+          (currentQueue.type === "C" || currentQueue.type === "B" ? 0.5 : 0));
+      console.log(gap);
+      console.log();
+    } else {
+      gap =
+        nextQueue.hour +
+        (nextQueue.type === "F" ||
+        nextQueue.type === "D" ||
+        nextQueue.type === "B"
+          ? 0.5
+          : 0) -
+        (currentQueue.hour +
+          (currentQueue.type == "E" ? 0 : 1) +
+          (currentQueue.type == "C" ||
+          currentQueue.type == "E" ||
+          currentQueue.type == "B"
+            ? 0.5
+            : 0) +
+          (currentQueue.type == "D" && +0.5));
+    }
   }
 
   return gap;

@@ -7,6 +7,7 @@
     "start:ts": "tsc -w",
     "start:js": "nodemon build/app.js",
     "start": "concurrently npm:start:*",
+    "dev:debug": "nodemon --config nodemon.json src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -32,6 +33,7 @@
     "moment": "^2.29.4",
     "mongoose": "^7.0.1",
     "nodemon": "^2.0.21",
-    "read-excel-file": "^5.6.1"
+    "read-excel-file": "^5.6.1",
+    "tsconfig-paths": "^4.2.0"
   }
 }

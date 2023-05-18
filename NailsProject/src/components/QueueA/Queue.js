@@ -224,6 +224,7 @@ const Queue = ({
   };
 
   const AMPM = (hour, type, gap) => {
+    console.log(hour, type, gap);
     var hourToReurn = { text: "", type: "" };
     switch (type) {
       case "A":
@@ -235,7 +236,7 @@ const Queue = ({
         hourToReurn.type = "B";
         break;
       case "C":
-        hourToReurn.text = hour + ":30 - " + (hour + Math.floor(gap)) + ":00";
+        hourToReurn.text = hour + ":30 - " + (hour + Math.floor(gap) == hour ? hour + 1 : hour + Math.floor(gap)) + ":00";
         hourToReurn.type = "C";
         break;
       case "D":
@@ -600,7 +601,7 @@ const Queue = ({
                   >
                     <Text
                       style={{
-                        textAlign: "center",
+                        textAlign: "left",
                         fontSize: 14,
                         color: "black",
                         direction: "rtl",

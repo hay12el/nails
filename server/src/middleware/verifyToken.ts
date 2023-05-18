@@ -9,7 +9,8 @@ const verifyToken = async (req:Request, res:Response, next:NextFunction) => {
         
         if(token){
             //@ts-ignore
-            const jwtRes = jwt.verify(token, process.env.secretKey)
+            // const jwtRes = jwt.verify(token, process.env.secretKey)
+            const jwtRes = jwt.verify(token, "ORANITSHELI66912")
 
             //@ts-ignore
             req.userId = jwtRes._id;

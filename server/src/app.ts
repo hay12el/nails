@@ -20,10 +20,18 @@ app.use('/event', eventRouter)
 app.use('/properties', propertiesRouter)
 app.use('/NotificationRouter', notificationRouter)
 
-app.listen(process.env.PORT, () => {
+///for debuging
+app.listen(4000, () => {
     console.log("Node Is Listening.");
-    mongoose.connect(process.env.ATLAS_URL || "")
+    mongoose.connect("mongodb+srv://hay12el:ORANITSHELI669@cluster0.u5hto5u.mongodb.net/OneProject?retryWrites=true&w=majority" || "")
     .then(() => {
         console.log("connect to Atlas.");  
     })
 })
+// app.listen(process.env.PORT, () => {
+//     console.log("Node Is Listening.");
+//     mongoose.connect(process.env.ATLAS_URL || "")
+//     .then(() => {
+//         console.log("connect to Atlas.");  
+//     })
+// })
