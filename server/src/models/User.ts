@@ -9,6 +9,7 @@ const UserSchema = new Schema<IUser>({
   isAdmin: { type: Boolean, required: true },
   myAdmin: { type: String, required: false },
   birthDay: { type: Date ,required: false },
+  notifiToken: { type: String, required: false }, 
   queues: [
     {
       type: Schema.Types.ObjectId,

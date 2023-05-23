@@ -9,6 +9,7 @@ export interface IUser {
   birthDay: Date;
   name: String;
   phone: String;
+  notifiToken: String;
   queues: [
     {
       type: Types.ObjectId;

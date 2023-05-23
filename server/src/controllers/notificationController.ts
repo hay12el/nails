@@ -1,18 +1,18 @@
 import { Expo } from "expo-server-sdk";
 import { Request, Response } from "express";
+import User from "../models/User";
 
 let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
 
-export const sendPushNotification = (req: Request, res: Response) => {
+export const sendPushNotification = async (req: Request, res: Response) => {
   try {
-    const pushTokens = [
-      "ExponentPushToken[O7BtjjNJuuYKPFS73d1Qom]",
-      "ExponentPushToken[1WdRNCNGfhudhycnMkh4BE]",
-    ];
-    console.log('ok');
-    
+    // const pushTokens = ["ExponentPushToken[ZyisQ-Ldsh6GMv7zJbnUAw]"];
+    //@ts-ignore
+    const pushTokens = await User.find({ myAdmin: req.userId }).select(
+      "notifiToken"
+    );
 
-    let messages:any = [];
+    let messages: any = [];
     for (let pushToken of pushTokens) {
       // Check that all your push tokens appear to be valid Expo push tokens
       if (!Expo.isExpoPushToken(pushToken)) {
@@ -36,7 +36,7 @@ export const sendPushNotification = (req: Request, res: Response) => {
     // and to compress them (notifications with similar content will get
     // compressed).
     let chunks = expo.chunkPushNotifications(messages);
-    let tickets:any = [];
+    let tickets: any = [];
     (async () => {
       // Send the chunks to the Expo push notification service. There are
       // different strategies you could use. A simple one is to send one chunk at a
@@ -62,6 +62,22 @@ export const sendPushNotification = (req: Request, res: Response) => {
   }
 };
 
+export const updateToken = async (req: Request, res: Response) => {
+  // user id: req.userId
+  //@ts-ignore
+  const userId = req.userId;
+  try {
+    if (userId) {
+      await User.findByIdAndUpdate(
+        { _id: userId },
+        { notifiToken: req.body.notifiToken }
+      );
+    }
+    res.sendStatus(200);
+  } catch (error) {
+    res.sendStatus(404);
+  }
+};
 // Create a new Expo SDK client
 // optionally providing an access token if you have enabled push security
 

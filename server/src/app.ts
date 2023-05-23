@@ -18,7 +18,7 @@ app.use(cors());
 app.use('/user', userRouter)
 app.use('/event', eventRouter)
 app.use('/properties', propertiesRouter)
-app.use('/NotificationRouter', notificationRouter)
+app.use('/Notification', notificationRouter)
 
 ///for debuging
 app.listen(4000, () => {

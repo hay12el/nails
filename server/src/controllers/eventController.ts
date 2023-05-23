@@ -175,14 +175,17 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
     } else {
       // the admin added an hour limitation to the current day
       const limit = queues.find((e) => e.type == "G");
+
       queues.push({
         //@ts-ignore
         time: new Date(Day.setHours(limit?.time.getHours())),
         type: "M",
       });
+      //@ts-ignore
+      console.log(new Date(Day.setHours(Number(limit?.to) + 3)));
       queues.push({
         //@ts-ignore
-        time: new Date(Day.setHours(limit?.to + 3)),
+        time: new Date(Day.setHours(Number(limit?.to) + 3)),
         type: "M",
       });
     }
@@ -198,10 +201,6 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
       ho[1] = ho[0];
       ho[0] = temp;
     }
-    console.error("vdfdf");
-
-    console.log(ho);
-    console.error();
 
     const objectToReturn = {};
     let LST = [];
@@ -358,7 +357,6 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
               hour: Number(newObj.to),
             };
             console.log(newObjj);
-            
 
             LST.push(newObjj);
           }
@@ -464,6 +462,8 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
 
     //@ts-ignore
     objectToReturn[timeAsString] = LST;
+    console.log(objectToReturn);
+
     res.send({ events: objectToReturn }).status(200);
     // res.sendStatus(200);
   } catch (err: any) {
@@ -627,6 +627,8 @@ const gapType = (hour: number, type: string) => {
 const calcGapForAdmin = (currentQueue, nextQueue, isAdmin) => {
   let gap = 0;
   // Calculate the gap between the current queue and the next queue
+  console.log(currentQueue, nextQueue);
+
   if (currentQueue.type == "M") {
     gap =
       nextQueue.hour +
@@ -644,10 +646,16 @@ const calcGapForAdmin = (currentQueue, nextQueue, isAdmin) => {
         (currentQueue.hour +
           (currentQueue.type === "C" || currentQueue.type === "B" ? 0.5 : 0));
     } else {
+      console.log("649");
+
       gap =
         nextQueue.hour -
         (currentQueue.hour +
-          (currentQueue.type === "C" || currentQueue.type === "D" ? 1 : 0) +
+          (currentQueue.type === "C" ||
+          currentQueue.type === "D" ||
+          currentQueue.type === "A"
+            ? 1
+            : 0) +
           (currentQueue.type === "E" ||
           currentQueue.type === "F" ||
           currentQueue.type === "B"
@@ -656,9 +664,6 @@ const calcGapForAdmin = (currentQueue, nextQueue, isAdmin) => {
     }
   } else {
     if (isAdmin) {
-      console.log();
-      console.log(currentQueue, nextQueue);
-
       //Here currentQueue is the end of the cancled queue.
       gap =
         nextQueue.hour +
@@ -667,8 +672,6 @@ const calcGapForAdmin = (currentQueue, nextQueue, isAdmin) => {
           : 0) -
         (currentQueue.hour +
           (currentQueue.type === "C" || currentQueue.type === "B" ? 0.5 : 0));
-      console.log(gap);
-      console.log();
     } else {
       gap =
         nextQueue.hour +
