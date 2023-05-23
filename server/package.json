@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "build/app.js",
   "scripts": {
     "start:ts": "tsc -w",
     "start:js": "nodemon build/app.js",
