@@ -6,7 +6,7 @@ const PropertiesSchema = new Schema<IAdminProperties>({
     type: Types.ObjectId,
     ref: "User",
   },
-  photos: {type: {}, required: true},
+  photos: {type: [], required: true},
   aboutMe: {type: {}, required: true},
   links: {type: {}, required: true},
 });

@@ -4,8 +4,9 @@ import { verifyToken } from "../middleware/verifyToken";
 
 const router = Express.Router()
 
+router.post('/updateToken', verifyToken ,updateToken);
+
 router.post('/sendNotification', verifyToken ,sendPushNotification);
 
-router.post('updateToken', verifyToken, updateToken)
 
 export default router;

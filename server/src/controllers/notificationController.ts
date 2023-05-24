@@ -8,21 +8,21 @@ export const sendPushNotification = async (req: Request, res: Response) => {
   try {
     // const pushTokens = ["ExponentPushToken[ZyisQ-Ldsh6GMv7zJbnUAw]"];
     //@ts-ignore
-    const pushTokens = await User.find({ myAdmin: req.userId }).select(
-      "notifiToken"
-    );
+    const pushTokens = await User.find({ myAdmin: req.userId }).select("notifiToken -_id");
+    console.log(pushTokens);
+    
 
     let messages: any = [];
     for (let pushToken of pushTokens) {
       // Check that all your push tokens appear to be valid Expo push tokens
-      if (!Expo.isExpoPushToken(pushToken)) {
-        console.error(`Push token ${pushToken} is not a valid Expo push token`);
+      if (!Expo.isExpoPushToken(pushToken.notifiToken)) {
+        console.error(`Push token ${pushToken.notifiToken} is not a valid Expo push token`);
         continue;
       }
 
       // Construct a message (see https://docs.expo.io/push-notifications/sending-notifications/)
       messages.push({
-        to: pushToken,
+        to: pushToken.notifiToken,
         sound: "default",
         title: "נעמה מניקור",
         body: "יש לך תור בשעה ככה וככה",
@@ -67,15 +67,19 @@ export const updateToken = async (req: Request, res: Response) => {
   //@ts-ignore
   const userId = req.userId;
   try {
+    
+    //@ts-ignore
+    console.log(req.body.notifiToken ,req.userId);
+    
     if (userId) {
-      await User.findByIdAndUpdate(
+      await User.findOneAndUpdate(
         { _id: userId },
-        { notifiToken: req.body.notifiToken }
+        { 'notifiToken': req.body.notifiToken }
       );
     }
     res.sendStatus(200);
   } catch (error) {
-    res.sendStatus(404);
+    res.sendStatus(402);
   }
 };
 // Create a new Expo SDK client

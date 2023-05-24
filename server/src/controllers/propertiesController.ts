@@ -1,5 +1,6 @@
 import AdminProperties from "../models/AdminProperties";
 import { Request, Response } from "express";
+import multer from 'multer';
 
 export const getAdminProperties = async (req: Request, res: Response) => {
   try {   
@@ -23,6 +24,10 @@ export const deletePhoto = async (req: Request, res: Response) => {
 
 export const addNewPhoto = async (req: Request, res: Response) => {
   try {
+    //@ts-ignore
+    const { originalname, filename, path } = req.file;
+    res.sendStatus(200)
+
   } catch (error: any) {
     console.log(error.message);
     res.sendStatus(404);

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 const verifyToken = async (req:Request, res:Response, next:NextFunction) => {
     // const token = req.headers['token'];
-    const token = req.body.token || req.query.token;
+    const token = req.body.token || req.query.token;    
 
     try{
         
