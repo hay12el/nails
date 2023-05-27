@@ -506,13 +506,13 @@ export const getAvailableHours = async (req: Request, res: Response) => {
     //@ts-ignore
     return { hour: new Date(x.time).getUTCHours(), type: x.type, to: x.to };
   });
-
+  
   // Add limit hours of the day
   if (!hours.some((e) => e.type == "G")) {
     //@ts-ignore
-    hours.push({ hour: new Date(Day.setHours(12)).getUTCHours(), type: "M" });
+    hours.push({ hour: 9, type: "M" });
     //@ts-ignore
-    hours.push({ hour: new Date(Day.setHours(22)).getUTCHours(), type: "M" });
+    hours.push({ hour: 18, type: "M" });
   } else {
     const limit = hours.find((e) => e.type == "G");
     //@ts-ignore

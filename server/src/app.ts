@@ -20,6 +20,10 @@ app.use('/event', eventRouter)
 app.use('/properties', propertiesRouter)
 app.use('/Notification', notificationRouter)
 
+const now = new Date();
+const options = { timeZone: 'Asia/Jerusalem' };
+const formatter = new Intl.DateTimeFormat('en-US', options);
+
 ///for debuging
 app.listen(4000, () => {
     console.log("Node Is Listening.");
