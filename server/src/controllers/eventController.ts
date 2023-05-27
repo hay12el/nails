@@ -171,7 +171,7 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
       //@ts-ignore
       queues.push({ time: new Date(Day.setHours(12)), type: "M" });
       //@ts-ignore
-      queues.push({ time: new Date(Day.setHours(22)), type: "M" });
+      queues.push({ time: new Date(Day.setHours(21)), type: "M" });
     } else {
       // the admin added an hour limitation to the current day
       const limit = queues.find((e) => e.type == "G");
@@ -182,7 +182,6 @@ export const AdminGetDayQueues = async (req: Request, res: Response) => {
         type: "M",
       });
       //@ts-ignore
-      console.log(new Date(Day.setHours(Number(limit?.to) + 3)));
       queues.push({
         //@ts-ignore
         time: new Date(Day.setHours(Number(limit?.to) + 3)),
@@ -649,6 +648,8 @@ const calcGapForAdmin = (currentQueue, nextQueue, isAdmin) => {
         : 0) -
       currentQueue.hour;
   } else if (nextQueue.type == "M") {
+    console.log("652");
+    
     if (isAdmin) {
       //Here currentQueue is the end of the cancled queue.
       gap =
@@ -656,8 +657,6 @@ const calcGapForAdmin = (currentQueue, nextQueue, isAdmin) => {
         (currentQueue.hour +
           (currentQueue.type === "C" || currentQueue.type === "B" ? 0.5 : 0));
     } else {
-      console.log("649");
-
       gap =
         nextQueue.hour -
         (currentQueue.hour +
