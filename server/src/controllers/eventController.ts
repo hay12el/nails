@@ -501,7 +501,7 @@ export const getAvailableHours = async (req: Request, res: Response) => {
     admin: req.query.admin,
     time: { $gte: Day, $lt: nextDay },
   }).select("time type to");
-
+  
   const hours = queues.map((x) => {
     //@ts-ignore
     return { hour: new Date(x.time).getUTCHours(), type: x.type, to: x.to };
@@ -534,6 +534,7 @@ export const getAvailableHours = async (req: Request, res: Response) => {
     ho[1] = ho[0];
     ho[0] = temp;
   }
+
   //gaps == Array of {gap: number, startFrom: number}
   const gaps = getQueueGaps(ho);
 
@@ -545,6 +546,9 @@ export const getAvailableHours = async (req: Request, res: Response) => {
 function getQueueGaps(sortedQueues: any) {
   // Initialize an array to store the gaps
   const gaps = [];
+
+  console.log(sortedQueues);
+  
 
   // Loop through the queues and calculate the gaps
   for (let i = 0; i < sortedQueues.length - 1; i++) {
@@ -589,6 +593,12 @@ function getQueueGaps(sortedQueues: any) {
     // Add the gap to the gaps array
     if (gap != 0) {
       if (currentQueue.type == "M" && nextQueue.type == "M") {
+        console.log(gap, currentQueue.hour);
+        gaps.push({
+          gap: gap,
+          startFrom: currentQueue.hour,
+        });
+      }else if(currentQueue.type == "M") {
         gaps.push({
           gap: gap,
           startFrom: currentQueue.hour,
